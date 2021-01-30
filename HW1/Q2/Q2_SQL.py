@@ -176,26 +176,36 @@ class HW2_sql():
     # Part b Create Indexes [1 points]
     def part_b_1(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_b_1_sql = ""
+        part_b_1_sql = '''
+            CREATE INDEX movie_index ON movies (id);
+        '''
         ######################################################################
         return self.execute_query(connection, part_b_1_sql)
     
     def part_b_2(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_b_2_sql = ""
+        part_b_2_sql = '''
+            CREATE INDEX cast_index ON movie_cast (cast_id);
+        '''
         ######################################################################
         return self.execute_query(connection, part_b_2_sql)
     
     def part_b_3(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_b_3_sql = ""
+        part_b_3_sql = '''
+            CREATE INDEX cast_bio_index ON cast_bio (cast_id);
+        '''
         ######################################################################
         return self.execute_query(connection, part_b_3_sql)
     
     # Part c Calculate a Proportion [3 points]
     def part_c(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_c_sql = ""
+        part_c_sql = '''
+            WITH temp1 AS (SELECT COUNT(DISTINCT title) AS counts FROM movies WHERE title LIKE "%war%" and score > 50),
+            temp2 AS (SELECT ((CAST (temp1.counts AS FLOAT)) / CAST(COUNT(movies.title) AS FLOAT)) AS proportion FROM movies, temp1)
+            SELECT printf("%.2f", proportion*100) FROM temp2 AS proportion;
+        '''
         ######################################################################
         cursor = connection.execute(part_c_sql)
         return cursor.fetchall()[0][0]
@@ -203,7 +213,14 @@ class HW2_sql():
     # Part d Find the Most Prolific Actors [4 points]
     def part_d(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_d_sql = ""
+        part_d_sql = '''
+            SELECT cast_name, COUNT(DISTINCT movie_id) AS appearance_count
+            FROM movie_cast AS mc
+            WHERE mc.popularity > 10
+            GROUP BY cast_name
+            ORDER BY appearance_count DESC
+            LIMIT 5;
+        '''
         ######################################################################
         cursor = connection.execute(part_d_sql)
         return cursor.fetchall()
@@ -211,7 +228,17 @@ class HW2_sql():
     # Part e Find the Highest Scoring Movies With the Least Amount of Cast [4 points]
     def part_e(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_e_sql = ""
+        part_e_sql = '''
+            SELECT 
+                title AS movie_title, 
+                score AS movie_score, 
+                COUNT(DISTINCT cast_id) AS cast_count
+            FROM movie_cast
+            INNER JOIN movies ON movie_cast.movie_id = movies.id
+            GROUP BY movie_title
+            ORDER BY movie_score DESC, cast_count ASC, movie_title ASC
+            LIMIT 5;
+        '''
         ######################################################################
         cursor = connection.execute(part_e_sql)
         return cursor.fetchall()
@@ -219,7 +246,21 @@ class HW2_sql():
     # Part f Get High Scoring Actors [4 points]
     def part_f(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_f_sql = ""
+        part_f_sql = '''
+            WITH temp1 AS (
+                SELECT cast_id, AVG(score) AS average_score, COUNT(DISTINCT movie_id) AS counts
+                FROM movies
+                INNER JOIN movie_cast ON movies.id = movie_cast.movie_id
+                WHERE score >= 25
+                GROUP BY cast_id
+            )
+            SELECT DISTINCT mc.cast_id AS cast_id, cast_name, printf("%.2f", average_score) AS average_score
+            FROM movie_cast AS mc
+            LEFT JOIN temp1 on temp1.cast_id = mc.cast_id
+            WHERE counts > 2
+            ORDER BY average_score DESC, cast_name ASC
+            LIMIT 10;
+        '''
         ######################################################################
         cursor = connection.execute(part_f_sql)
         return cursor.fetchall()
@@ -227,13 +268,47 @@ class HW2_sql():
     # Part g Creating Views [6 points]
     def part_g(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_g_sql = ""
+        part_g_sql = '''
+            CREATE VIEW good_collaboration AS
+                WITH temp1 AS (
+                    SELECT title, score, movie_id, cast_id, cast_name
+                    FROM movies
+                    INNER JOIN movie_cast ON movies.id = movie_cast.movie_id
+                ),
+                temp2 AS (
+                    SELECT 
+                        t11.cast_id AS cast_member_id1, 
+                        t12.cast_id AS cast_member_id2,
+                        COUNT(t11.movie_id) AS movie_count,
+                        AVG(t11.score) AS average_movie_score
+                    FROM temp1 AS t11
+                    INNER JOIN temp1 AS t12 ON 
+                        (t11.cast_id < t12.cast_id AND
+                        t11.movie_id = t12.movie_id)
+                    GROUP BY t11.cast_id, t12.cast_id
+                )
+                SELECT cast_member_id1, cast_member_id2, movie_count, average_movie_score
+                FROM temp2
+                WHERE temp2.average_movie_score > 0.4 AND movie_count >= 3;
+        '''
         ######################################################################
         return self.execute_query(connection, part_g_sql)
+        # cursor = connection.execute(part_g_sql)
+        # test = '''SELECT * FROM good_collaboration;'''
+        # cursor = connection.execute(test)
+        # return cursor.fetchall()
     
     def part_gi(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_g_i_sql = ""
+        #  For Q2.g.i, the goal is to find the 5 cast members with the highest collaboration_score, where
+        #  collaboration_score is defined as the cast member's average average_movie_score. For example,
+        #  for a cast_id of 123, look at all of the rows of the good_collaboration view which have either a
+        #  cast_member_id1 of 123 or a cast_member_id2 of 123; for those rows, average the average_movie_score column,
+        #  and that will give you the collaboration_score of cast_id 123.
+        part_g_i_sql = '''
+            SELECT cast_member_id1, movie_count, average_movie_score
+            FROM good_collaboration;
+        '''
         ######################################################################
         cursor = connection.execute(part_g_i_sql)
         return cursor.fetchall()
@@ -339,7 +414,9 @@ if __name__ == "__main__":
             print(line[0],line[1],line[2])
     except:
         print("Error in part f")
-    
+
+    print('Here starts checking G: ', db.part_g(conn))
+    print('Here starts checking GI:' , db.part_gi(conn))
     try:
         print('\033[32m' + "part g: " + '\033[m' + str(db.part_g(conn)))
         print('\033[32m' + "part g.i: " + '\033[m')
@@ -348,7 +425,7 @@ if __name__ == "__main__":
     except:
         print("Error in part g")
 
-    try:   
+    try:
         print('\033[32m' + "part h.i: " + '\033[m'+ str(db.part_h(conn,"data/movie_overview.csv")))
         print('\033[32m' + "Count h.ii: " + '\033[m' + str(db.part_hi(conn)))
         print('\033[32m' + "Count h.iii: " + '\033[m' + str(db.part_hii(conn)))
