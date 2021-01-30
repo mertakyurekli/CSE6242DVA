@@ -121,7 +121,6 @@ class HW2_sql():
     
     def part_aii_2(self,connection, path):
         ############### CREATE IMPORT CODE BELOW ############################
-        cur = connection.cursor()
         # 1. insert all data into movie_cast.db
         with open('data/movie_cast.csv', 'r', encoding='utf-8') as f:
             records = csv.reader(f, delimiter=',')
@@ -289,10 +288,11 @@ class HW2_sql():
                 )
                 SELECT cast_member_id1, cast_member_id2, movie_count, average_movie_score
                 FROM temp2
-                WHERE temp2.average_movie_score > 0.4 AND movie_count >= 3;
+                WHERE temp2.average_movie_score > 40 AND movie_count >= 3;
         '''
         ######################################################################
         return self.execute_query(connection, part_g_sql)
+        # The following 4 lines are for debugging purpose only.
         # cursor = connection.execute(part_g_sql)
         # test = '''SELECT * FROM good_collaboration;'''
         # cursor = connection.execute(test)
@@ -306,8 +306,21 @@ class HW2_sql():
         #  cast_member_id1 of 123 or a cast_member_id2 of 123; for those rows, average the average_movie_score column,
         #  and that will give you the collaboration_score of cast_id 123.
         part_g_i_sql = '''
-            SELECT cast_member_id1, movie_count, average_movie_score
-            FROM good_collaboration;
+            WITH temp1 AS (SELECT cast_member_id1 AS cast_id FROM good_collaboration 
+                            UNION 
+                           SELECT cast_member_id2 FROM good_collaboration),
+            temp2 AS (
+                SELECT cast_id, AVG(average_movie_score) AS collaboration_score
+                FROM temp1
+                INNER JOIN good_collaboration AS g1 ON (temp1.cast_id = g1.cast_member_id1 
+                                                     OR temp1.cast_id = g1.cast_member_id2)
+                GROUP BY temp1.cast_id
+            )
+            SELECT DISTINCT temp2.cast_id AS cast_id, cast_name, printf("%.2f", collaboration_score) AS collaboration_score
+            FROM temp2
+            INNER JOIN movie_cast AS mc ON mc.cast_id = temp2.cast_id
+            ORDER BY collaboration_score DESC, cast_name ASC
+            LIMIT 5;
         '''
         ######################################################################
         cursor = connection.execute(part_g_i_sql)
@@ -316,9 +329,21 @@ class HW2_sql():
     # Part h FTS [4 points]
     def part_h(self,connection,path):
         ############### EDIT SQL STATEMENT ###################################
-        part_h_sql = ""
-        ######################################################################
-        connection.execute(part_h_sql)
+        connection.execute('CREATE VIRTUAL TABLE IF NOT EXISTS movie_overview USING FTS3(id INTEGER, overview TEXT)');
+        with open('data/movie_overview.csv', 'r', encoding='utf-8-sig') as f:
+            records = csv.reader(f, delimiter=',')
+            for record in records:
+                query = '''
+                    INSERT INTO movie_overview (id, overview) VALUES (?,?)
+                '''
+                connection.execute(query, tuple(record))
+        connection.commit()
+        # part_h_sql = '''
+        #     INSERT INTO movie_overview (id, overview)
+        #         SELECT * FROM
+        # '''
+        # ######################################################################
+        # connection.execute(part_h_sql)
         ############### CREATE IMPORT CODE BELOW ############################
         
         ######################################################################
@@ -328,14 +353,18 @@ class HW2_sql():
         
     def part_hi(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_hi_sql = ""
+        part_hi_sql = '''
+            SELECT COUNT(overview) FROM movie_overview WHERE movie_overview MATCH 'fight OR fight.';
+        '''
         ######################################################################
         cursor = connection.execute(part_hi_sql)
         return cursor.fetchall()[0][0]
     
     def part_hii(self,connection):
         ############### EDIT SQL STATEMENT ###################################
-        part_hii_sql = ""
+        part_hii_sql = '''
+            SELECT COUNT(overview) FROM movie_overview WHERE movie_overview MATCH 'space NEAR/5 program;'
+        '''
         ######################################################################
         cursor = connection.execute(part_hii_sql)
         return cursor.fetchall()[0][0]
@@ -425,6 +454,7 @@ if __name__ == "__main__":
     except:
         print("Error in part g")
 
+    print('Errors in part H: ', db.part_h(conn,"data/movie_overview.csv"))
     try:
         print('\033[32m' + "part h.i: " + '\033[m'+ str(db.part_h(conn,"data/movie_overview.csv")))
         print('\033[32m' + "Count h.ii: " + '\033[m' + str(db.part_hi(conn)))
