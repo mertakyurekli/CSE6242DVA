@@ -71,7 +71,7 @@ class HW2_sql():
             CREATE TABLE IF NOT EXISTS movies (
             id INTEGER PRIMARY KEY,
             title TEXT,
-            score REAL DEFAULT 0
+            score REAL
         );
         '''
         ######################################################################
@@ -228,14 +228,18 @@ class HW2_sql():
     def part_e(self,connection):
         ############### EDIT SQL STATEMENT ###################################
         part_e_sql = '''
-            SELECT 
-                title AS movie_title, 
-                score AS movie_score, 
-                COUNT(DISTINCT cast_id) AS cast_count
-            FROM movie_cast
-            INNER JOIN movies ON movie_cast.movie_id = movies.id
-            GROUP BY movie_title
-            ORDER BY movie_score DESC, cast_count ASC, movie_title ASC
+            WITH temp1 AS (
+                SELECT 
+                    title AS movie_title, 
+                    score AS movie_score, 
+                    COUNT(DISTINCT cast_id) AS cast_count
+                FROM movie_cast
+                INNER JOIN movies ON movie_cast.movie_id = movies.id
+                GROUP BY movie_title
+                ORDER BY movie_score DESC, cast_count ASC, movie_title ASC
+            )
+            SELECT movie_title, printf("%.2f", movie_score) AS movie_score, cast_count
+            FROM temp1
             LIMIT 5;
         '''
         ######################################################################
