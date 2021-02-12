@@ -1,4 +1,5 @@
 id,name
+2975,Laurence Fishburne
 6384,Keanu Reeves
 530,Carrie-Anne Moss
 1107983,Martin Luther King
@@ -7,7 +8,6 @@ id,name
 8349,Martin Sheen
 3084,Marlon Brando
 3087,Robert Duvall
-2975,Laurence Fishburne
 64,Gary Oldman
 1776,Francis Ford Coppola
 564,Richard Linklater
@@ -33,7 +33,7 @@ id,name
 2662887,Ralph Boston
 1700943,Jelani Cobb
 938972,Angela Davis
-1236595,Henry Louis Gates, Jr.
+1236595,Henry Louis Gates Jr.
 559610,Allen West
 2198533,Candace Owens
 2699648,Robert Woodson
@@ -89,14 +89,14 @@ id,name
 82702,Michael Jackson
 65605,Muhammad Ali
 47775,Marc Anthony
+14386,Beyoncé
+84933,Mary J. Blige
 4483,Dustin Hoffman
 13570,Samuel Goldwyn
 3417,Tony Goldwyn
 6729,Robert Benton
 491,John Williams
 8406,John Calley
-103829,Jason Presson
-515,Glenn Close
 380,Robert De Niro
 84678,Johnny Cash
 20309,Dwight Yoakam
@@ -208,15 +208,12 @@ id,name
 1229169,Roger Ailes
 1816204,Frederick Oberlander
 1816207,Tevfik Arif
-1224993,Wolf Blitzer
-2837033,Jim Acosta
-1258041,David Axelrod
 56446,John Cena
 151043,Randy Orton
 77120,Steve Austin
 2399215,Jamal Khashoggi
 2763159,Omar Abdulaziz
-2769274,Agnès Callamard
+2346637,Mohammad bin Salman
 1314544,Cenk Uygur
 998458,Gavin McInnes
 1923219,Richard Spencer
@@ -230,6 +227,9 @@ id,name
 2161106,Sebastian Gorka
 2161107,Raheem Kassam
 2161104,Corey Lewandowski
+2706019,Matt Furie
+2767011,Aiyana Udesen
+2767012,Chris Sullivan
 2255261,Michel Zlotowski
 4960,Charles Bronson
 15753,Jill Ireland
@@ -295,6 +295,7 @@ id,name
 9825,Saffron Burrows
 1115103,Joseph Kelly
 11770,John Carpenter
+515,Glenn Close
 8891,John Travolta
 12852,Barry Corbin
 3800,Jerry Hall
@@ -348,8 +349,6 @@ id,name
 5149,Bonnie Hunt
 2144,Tobin Bell
 2505,James Cromwell
-6104,Julian Sands
-10698,Tchéky Karyo
 76184,Bryan Marshall
 75781,John Turner
 30672,Sandor Elès
@@ -359,6 +358,8 @@ id,name
 20861,Heidi Brühl
 39770,Adam Roarke
 34721,Larry Bishop
+83908,Daniel Massey
+8499,William Windom
 16896,James Garner
 8857,Debbie Reynolds
 15395,Maurice Ronet
@@ -376,6 +377,8 @@ id,name
 2027993,Philip J. Klass
 27116,Kevin Conway
 31,Tom Hanks
+20959,Louis Gossett Jr.
+57829,Anthony LaPaglia
 1066777,Mumia Abu-Jamal
 65013,Rubin 'Hurricane' Carter
 4808,Giancarlo Esposito
@@ -391,7 +394,6 @@ id,name
 7077,Scatman Crothers
 3391,Kathleen Turner
 117075,Henry Jaglom
-240,Stanley Kubrick
 34947,Kevin Conroy
 1262612,Neal Adams
 21200,Will Arnett
@@ -522,80 +524,74 @@ id,name
 16303,Céline Dion
 66586,Mariah Carey
 122750,Leslie Uggams
-109897,Ethel Merman
-70089,Imogene Coca
 6352,Jane Fonda
-13301,Quincy Jones
-1487,Bob Dylan
-53397,Christina Aguilera
-12111,Justin Timberlake
 1201284,Jacques Peretti
-140567,Donny Osmond
-2583773,J Randall Taraborelli
 20156,Sammy Davis Jr.
-4347,Frank Sinatra
-4299,Dean Martin
 37934,André Benjamin
-15310,Anthony Kiedis
-12207,Kylie Minogue
 56367,Naomi Campbell
-200,Nancy Cartwright
 45042,Adam Ant
-553721,Nick Ashford
-1789239,Renaldo Benson
 990578,Rocky Marciano
-1056814,Chris Dundee
 65606,George Foreman
 107375,Joe Frazier
-1304153,Imelda Marcos
 87919,Mark Calaway
-928391,Marty Lunde
+936039,Madonna Grimes
+84932,Jay-Z
+93527,Kelly Rowland
+119589,Donald Glover
+104779,Nas
+102786,Barack Obama
+62644,50 Cent
+72208,Alicia Keys
+2585,Eric Clapton
+36811,Nick Cannon
+212208,Taylor Swift
 4135,Robert Redford
-13717,Bob Woodward
 73931,Bette Midler
-142439,Emmett Kelly
 863,Orson Bean
-39015,Eileen Brennan
 21278,Alan Alda
-13724,Jane Alexander
 10400,Barbra Streisand
 19803,Leonardo Sbaraglia
-1084298,Alfredo Casero
-100140,Daniel Rabinovich
 35,Sally Field
-21399,Ron Silver
 1221217,Anne-Sophie Mutter
-2922326,Vienna Philharmonic
 2297235,Antony Horder
 10930,Irvin Kershner
-2140901,Gary Kurtz
-2,Mark Hamill
 130,Kenny Baker
-33185,Jeremy Bulloch
-670,Ben Burtt
 14782,Andrew Robinson
-147,Michael Madsen
-32396,Richard Belzer
-36190,Edie Falco
-44712,Jill Eikenberry
-2056726,Kevin Dobson
-66776,Liza Minnelli
-40389,Bernadette Peters
-5699,Patti LuPone
-26485,Jim Belushi
-54812,Chevy Chase
 4512,James Woods
-4513,Elizabeth McGovern
 4430,Sharon Stone
-14702,Cathy Moriarty
 4690,Christopher Walken
-3096,John Cazale
 45001,Steve Allen
-107605,Lenny Bruce
 73421,Joaquin Phoenix
-1545693,Zazie Beetz
 1259,Ennio Morricone
-19665,John Boorman
 67773,Steve Martin
-3092,Diane Keaton
-519,Martin Short
+73641,Christiane Amanpour
+138986,Tony Bennett
+174982,Neil Pearson
+28767,June Carter Cash
+230198,Bob Wooton
+1215645,Roy Clark
+1504297,Marshall Grant
+1253615,Patsy Cline
+1504296,Luther Perkins
+10823,Kris Kristofferson
+15425,Neil Young
+1347896,Jessi Colter
+230249,Rosanne Cash
+368,Reese Witherspoon
+33684,Bono
+1487,Bob Dylan
+111270,Waylon Jennings
+230253,Marty Stuart
+8261,Willie Nelson
+57446,Mark Romanek
+1430,Keith Richards
+2778,Dennis Hopper
+4959,Claudia Cardinale
+33741,Rita Hayworth
+50967,Doug McClure
+940155,Alfred Drake
+2744,Carmen Maura
+34902,Jane Horrocks
+18972,Danny Masterson
+2687,Lyriq Bent
+155890,Julie Garfield

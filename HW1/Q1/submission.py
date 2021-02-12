@@ -101,9 +101,9 @@ class Graph:
         dnode = {node[0]: [] for node in self.nodes}
         for edge in self.edges:
             for node in dnode:
-                if edge[0] == node:
+                if edge[0] == node and edge[1] not in dnode[node]:
                     dnode[node].append(edge[1])
-                elif edge[1] == node:
+                elif edge[1] == node and edge[0] not in dnode[node]:
                     dnode[node].append(edge[0])
         d, maxs = {}, float('-inf')
         for node, v in dnode.items():
@@ -258,6 +258,7 @@ class TMDBAPIUtils:
         if response.status == 200:
             # Data fields example can be found here: https://developers.themoviedb.org/3/movies/get-movie-credits
             data = json.loads(response.read())  # response.read() method will return a btye string which can be regarded as a json string
+        else: return None
         castData = data['cast']
         # In this question, we're only interested in 3 fields: 'id', 'title', 'vote_avg'
         for d in castData:
@@ -381,8 +382,8 @@ def return_argo_lite_snapshot()->str:
     """
     Return the shared URL of your published graph in Argo-Lite
     """
-    return 'https://poloclub.github.io/argo-graph-lite/#77c4a97c-07e7-4978-b7cf-47d14eaa91a3'
-
+    # return 'https://poloclub.github.io/argo-graph-lite/#77c4a97c-07e7-4978-b7cf-47d14eaa91a3'
+    return 'https://poloclub.github.io/argo-graph-lite/#fe1eaba9-09ed-4e55-8091-26f5ff028b39'
 
 
 # You should modify __main__ as you see fit to build/test your graph using  the TMDBAPIUtils & Graph classes.
@@ -394,42 +395,47 @@ if __name__ == "__main__":
     graph.add_node(id='2975', name='Laurence Fishburne')    # Graph Object with a single node representing Laurence Fishburne
     tmdb_api_utils = TMDBAPIUtils(api_key='efcc3ff2e21d60f2f1ce04d19c27ab8a')
 
-    # call functions or place code here to build graph (graph building code not graded)
-    # Suggestion: code should contain steps outlined above in BUILD CO-ACTOR NETWORK
-    # Begin build base graph:
-    LFcredits = tmdb_api_utils.get_movie_credits_for_person(person_id='2975', vote_avg_threshold=8.0)  # Find all of Laurence Fishburne's movie credits that have a vote average >= 8.0
-    for i, LFcredit in enumerate(LFcredits):   # All co-actors of LF's movies
-        castMembers = tmdb_api_utils.get_movie_cast(movie_id=str(LFcredit['id']), limit=3, exclude_ids=['2975'])  # all members in a particular movie of LF
-        for j, castMember in enumerate(castMembers):
-            graph.add_node(id=str(castMember['id']), name=castMember['name'])
-            graph.add_edge(source='2975', target=str(castMember['id']))
+    def build_base_graph():
+        LFcredits = tmdb_api_utils.get_movie_credits_for_person(person_id='2975', vote_avg_threshold=8.0)  # Find all of Laurence Fishburne's movie credits that have a vote average >= 8.0
+        for i, LFcredit in enumerate(LFcredits):
+            castMembers = tmdb_api_utils.get_movie_cast(movie_id=str(LFcredit['id']), limit=3, exclude_ids=['2975'])
+            print(len(castMembers))
+            for j, castMember in enumerate(castMembers):
+                graph.add_node(id=str(castMember['id']), name=castMember['name'])
+                graph.add_edge(source='2975', target=str(castMember['id']))
+        return graph
 
-    times = 1
-    nodes = graph.nodes
-    nodes.pop(nodes.index(('2975', 'Laurence Fishburne')))  # pop out Laurence Fishburne
-    print('nodes: ', len(nodes))
-    exclude_ids = []
-    while times < 2:
-        for node in nodes:
-            exclude_ids.append(node[0])
-            if node[0] == '2975': continue
-            movies = tmdb_api_utils.get_movie_credits_for_person(person_id=node[0], vote_avg_threshold=8.0)   # find all movies of person_id
-            print('movies: ', len(movies))
-            for i, movie in enumerate(movies):  # All co-actors of LF's movies
-                castMembers = tmdb_api_utils.get_movie_cast(movie_id=str(movie['id']), limit=3, exclude_ids=exclude_ids)  # all members in a particular movie of LF
-                if castMembers: print('casts: ', len(castMembers))
-                if not castMembers: continue
-                for j, castMember in enumerate(castMembers):
-                    graph.add_node(str(castMember['id']), name=castMember['name'])
-                    graph.add_edge(source=node[0], target=str(castMember['id']))
-                    # print(len(graph.nodes), len(graph.edges))
-                    if len(graph.nodes) >= 600: break
-                if len(graph.nodes) >= 600: break
-            if len(graph.nodes) >= 600: break
-        if len(graph.nodes) >= 600: break
-        times += 1
-        nodes = graph.nodes
-    print(graph.nodes, len(graph.nodes), '\n', graph.edges, len(graph.edges))
+    def build():
+        exclude_id = ['2975']
+        graph = build_base_graph()  # build base graph
+        length = 0
+        for times in range(2):
+            if times == 0:                  # Find actors that connect directly with 'fishburne'
+                nodes = graph.nodes         # 'nodes' is actors that directly connect with 'fishburne' (len(nodes) = 11)
+                new_add_nodes = nodes[1:]   # len(nodes) = 10 after slicing
+                length = len(new_add_nodes) # length is 10
+                print('First iteration: ', nodes, new_add_nodes)
+            else:                           # Find actors that connect with actors in 'nodes' list directly
+                nodes = graph.nodes         #
+                print('here: ', len(nodes), nodes)
+                new_add_nodes = nodes[length+1:]
+                length = len(new_add_nodes)
+                print('Second iteration: ', nodes, new_add_nodes)
+            for node in new_add_nodes:
+                exclude_id.append(node[0])
+                movies = tmdb_api_utils.get_movie_credits_for_person(person_id=node[0], vote_avg_threshold=8.0)
+                if not movies: continue
+                for i, movie in enumerate(movies):
+                    castMembers = tmdb_api_utils.get_movie_cast(movie_id=str(movie['id']), limit=3, exclude_ids=exclude_id)
+                    if not castMembers: continue
+                    for j, castMember in enumerate(castMembers):
+                        graph.add_node(str(castMember['id']), name=castMember['name'])
+                        graph.add_edge(source=node[0], target=str(castMember['id']))
+                        if len(graph.nodes) >= 525 or len(graph.edges) >= 750: break
+                print(times, len(graph.nodes), len(graph.edges))
+        return graph
+    graph = build()
+    print('nodes: ', len(graph.nodes), graph.nodes, '\n', 'edges: ', len(graph.edges), graph.edges)
 
     graph.write_edges_file()
     graph.write_nodes_file()
