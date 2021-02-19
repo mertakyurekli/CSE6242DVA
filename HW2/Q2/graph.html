@@ -23,6 +23,7 @@ text {
 }
 
 </style>
+
 <html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
@@ -39,6 +40,8 @@ text {
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 <title></title></head><body>
+
+
 <script>
 
 d3.dsv(",", "board_games.csv", function(d) {
@@ -64,11 +67,11 @@ d3.dsv(",", "board_games.csv", function(d) {
 
   var force = d3.forceSimulation()
       .nodes(d3.values(nodes))
-      .force("link", d3.forceLink(links).distance(100))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force("x", d3.forceX())
-      .force("y", d3.forceY())
-      .force("charge", d3.forceManyBody().strength(-250))
+      .force("link", d3.forceLink(links).distance(100))         // set repel force between each two nodes
+      .force('center', d3.forceCenter(width / 2, height / 2))   // set force to center
+      .force("x", d3.forceX())                                  // for attracting elements to a given point
+      .force("y", d3.forceY())                                  // for attracting elements to a given point
+      .force("charge", d3.forceManyBody().strength(-250))       // Force functions are added to the simulation using .force() where the first argument is a user defined id and the second argument the force function
       .alphaTarget(1)
       .on("tick", tick);
 

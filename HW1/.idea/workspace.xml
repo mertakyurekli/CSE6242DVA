@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea28f4c8-ef69-41ff-8d60-9830387c89da" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q2/Q2" beforeDir="false" afterPath="$PROJECT_DIR$/Q2/Q2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q2/Q2-journal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q2/sample" beforeDir="false" afterPath="$PROJECT_DIR$/Q2/sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HW2/Q1/Q1.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +35,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Q2/Q2_SQL.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../HW2" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
@@ -85,6 +82,7 @@
       <workItem from="1612977930269" duration="23477000" />
       <workItem from="1613177599092" duration="1394000" />
       <workItem from="1613340808414" duration="2257000" />
+      <workItem from="1613582554840" duration="31000" />
     </task>
     <servers />
   </component>
@@ -105,11 +103,11 @@
       <screen x="-1920" y="0" width="1536" height="832" />
     </state>
     <state x="-1417" y="175" key="EnvironmentVariablesDialog/-1920.0.1536.832/0.0.1920.1040@-1920.0.1536.832" timestamp="1611885743843" />
-    <state x="685" y="210" key="FileChooserDialogImpl" timestamp="1613341073380">
+    <state x="685" y="210" key="FileChooserDialogImpl" timestamp="1613582586496">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1372" y="168" key="FileChooserDialogImpl/-1920.0.1536.832/0.0.1920.1040@-1920.0.1536.832" timestamp="1611886225514" />
-    <state x="685" y="210" key="FileChooserDialogImpl/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1613341073380" />
+    <state x="685" y="210" key="FileChooserDialogImpl/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1613582586496" />
     <state width="1224" height="121" key="GridCell.Tab.0.bottom" timestamp="1613179006883">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
