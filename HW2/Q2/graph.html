@@ -22,6 +22,8 @@ text {
   pointer-events: none;
 }
 
+
+
 </style>
 
 <html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
@@ -39,6 +41,10 @@ text {
 <mso:_SharedFileIndex msdt:dt="string"></mso:_SharedFileIndex>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
+    <!-- Q2.e.1: You may find this post helpful: https://stackoverflow.com/questions/17989923/html-i-want-to-position-this-paragraph-text-to-bottom-of-my-page-->
+    <div style="position: relative">
+        <p style="position: fixed; right: 0; width: 100%; text-align: right">GT Username: yyu441</p>
+    </div>
 <title></title></head><body>
 
 
@@ -55,6 +61,10 @@ d3.dsv(",", "board_games.csv", function(d) {
   var links = data;
 
   var nodes = {};
+
+  var color = d3.scaleLinear()
+                .domain([1,10])
+                .range(['yellow', 'red']);
 
   // compute the distinct nodes from the links.
   links.forEach(function(link) {
@@ -79,30 +89,66 @@ d3.dsv(",", "board_games.csv", function(d) {
       .attr("width", width)
       .attr("height", height);
 
+
   // add the links
   var path = svg.append("g")
       .selectAll("path")
       .data(links)
       .enter()
       .append("path")
-      .attr("class", function(d) { return "link " + d.type; });
+      .attr("class", function(d) { return "link " + d.type; })
+        .style("stroke", function(d) {
+            if (d.value === 1) { return "green"; }              // set edge color to green/grey
+            else { return "grey"; }
+        })
+        .style("stroke-width", function(d) {
+            if (d.value === 1) { return 1; }                    // set edge width to thick/thin
+            else { return 5; }
+        })
+        .style("stroke-dasharray", function(d) {
+            if (d.value === 1) { return ("10, 5"); }            // set edge style to dashed/solid
+        });
 
   // define the nodes
   var node = svg.selectAll(".node")
       .data(force.nodes())
       .enter().append("g")
-      .attr("class", "node")
-      .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended));
+      .attr("class", "node");
+    const drag = d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended);
+    node.call(drag).on('dblclick', clickAgain);
 
-  // add the nodes
+  // add the nodes and set node radius (Q2.c.1)
+  let paths = svg.selectAll('path');
   node.append("circle")
-      .attr("r", 5);
+      .attr("r", function(d) {
+          d.weight = paths.filter(function(p) {
+              return p.source.index === d.index || p.target.index === d.index
+         }).size();
+        const minRadius = 10;
+        return minRadius + (d.weight * 2);
+      })                                                // set radius (Q2.c.1)
+      .style('fill', function(d) {
+          return color(d.weight);
+      });                                               // set node color gradient (Q2.c.2)
+
+
+  // add labels to nodes
+  node.append("text")
+      .attr("fill","black")
+      .attr("transform", function(d) {
+          return "translate(" + d.x + "," + 0 + ")";
+      })                                    // Q2.a set data label position to up right
+      .text(function(d){
+        if (d.name){
+          return d.name;      // You're supposed to use ".name" rather than ".source"
+        }})
+      .style("font-weight", 'bold');
 
   // add the curvy lines
-  function tick() {
+  function tick() {                     // This function sets how curvy each link is.
       path.attr("d", function(d) {
           var dx = d.target.x - d.source.x,
               dy = d.target.y - d.source.y,
@@ -120,28 +166,66 @@ d3.dsv(",", "board_games.csv", function(d) {
       });
   };
 
+  // For Q2.d.1 I found this post very helpful: https://stackoverflow.com/questions/50282288/d3-double-click-to-reset-the-sticky-nodes
+  function clickAgain(event, d) {
+      clearTimeout(300);
+      d.fx = null;
+      d.fy = null;
+      force.alpha(1).restart();
+  }
+
   function dragstarted(d) {
       if (!d3.event.active) force.alphaTarget(0.3).restart();
       d.fx = d.x;
       d.fy = d.y;
   };
 
+  // Q2.d.2 I found this post very helpful: https://bl.ocks.org/d3noob/5141528  &  http://bl.ocks.org/mostaphaRoudsari/82f51f01b4619db2f09f
   function dragged(d) {
       d.fx = d3.event.x;
       d.fy = d3.event.y;
+      d3.select(this).select("circle").transition()
+        .duration(0)
+        .attr("r", 16)
+        .style("fill", "lightsteelblue")
+      .style('stroke-width', 3);
   };
 
+  // For Q2.d.1 I found this post very helpful: https://stackoverflow.com/questions/50282288/d3-double-click-to-reset-the-sticky-nodes
+  var clickDate = new Date();
+  var time_difference;
   function dragended(d) {
       if (!d3.event.active) force.alphaTarget(0);
-      if (d.fixed == true) {
-          d.fx = d.x;
-          d.fy = d.y;
+      time_difference = (new Date()).getTime() - clickDate.getTime();
+      clickDate = new Date();
+      if (time_difference < 250) {                          // Q2.d.1: when dragged, make node to be highlighted and pinned
+          force.alphaTarget(0.3).restart();
+          d3.event.subject.fx = null;
+          d3.event.subject.fy = null;
+          // Q2.d.2: The following lines of code in 'dragended' function is trying to recover the style and color of a clicked/dragged node.
+          d3.select(this).select('circle').transition()
+          .duration(0)
+          .attr("r", function(d) {
+              d.weight = paths.filter(function(p) {
+                  return p.source.index === d.index || p.target.index === d.index
+             }).size();
+            const minRadius = 10;
+            return minRadius + (d.weight * 2);
+          })                                                //
+          .style('fill', function(d) {
+              return color(d.weight);
+          })
+          .style('stroke-width', '1.5px')
+      } else {                                              // Q2.d.3: when not double-click node, remain node as highlighted
+          d3.select(this).select("circle").transition()
+            .duration(0)
+            .attr("r", 16)
+            .style("fill", "lightsteelblue")
+          .style('stroke-width', 3);
       }
-      else {
-          d.fx = null;
-          d.fy = null;
-      }
-  };
+
+  }
+
   
 }).catch(function(error) {
   console.log(error);
