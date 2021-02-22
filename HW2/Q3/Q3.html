@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style type="text/css">
+/* AXES */
+/* ticks */
+.axis line{
+stroke: #706f6f;
+stroke-width: 0.5;
+shape-rendering: crispEdges;
+}
+
+/* axis contour */
+.axis path {
+stroke: #706f6f;
+stroke-width: 0.7;
+shape-rendering: crispEdges;
+}
+
+/* axis text */
+.axis text {
+fill: #2b2929;
+font-family: Georgia;
+font-size: 120%;
+}
+
+/* LINE CHART */
+path.line-0 {
+fill: none;
+stroke: #ed3700;
+}
+
+path.line-1 {
+fill: none;
+stroke: #2b2929;
+stroke-dasharray: 2;
+}
+
+path.line-2 {
+fill: none;
+stroke: #9c9c9c;
+stroke-dasharray: 6;
+}
+
+.serie_label {
+fill: #2b2929;
+font-family: Georgia;
+font-size: 80%;
+}
+
+</style>
+
+<html>
+<!-- Body tag is where we will append our SVG and SVG objects-->
+<body>
+<!-- Load in the d3 library -->
+<script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+<script>
+    // This code is using the template from this post: https://bl.ocks.org/d3noob/daecba427fed7c2d912d8abbe9f3e784
+    // set the dimensions and margins of the graph
+    var margin = {top: 50, right: 100, bottom: 50, left: 100},
+        width = 750 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    // parse the date / time
+    var parseTime = d3.timeParse("%Y-%m-%d");
+
+    
+    // set the ranges
+    var x = d3.scaleTime().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    // define the 1st line
+    var valueline1 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Catan=count"]); });
+
+    // define the 2nd line
+    var valueline2 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Dominion=count"]); });
+
+    // define the 3rd line
+    var valueline3 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Codenames=count"]); });
+
+    // define the 4th line
+    var valueline4 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Terraforming Mars=count"]); });
+
+    // define the 5th line
+    var valueline5 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Gloomhaven=count"]); });
+
+    // define the 6rd line
+    var valueline6 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Magic: The Gathering=count"]); });
+
+    // define the 7th line
+    var valueline7 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Dixit=count"]); });
+
+    // define the 8th line
+    var valueline8 = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d["Monopoly=count"]); });
+
+    // append the svg obgect to the body of the page
+    // appends a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    var svg1 = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.csv("boardgame_ratings.csv").then(function(data) {
+        console.log(data);
+      // format the data
+      data.forEach(function(d) {
+          d.date = parseTime(d.date);
+          d["Catan=count"] = +d["Catan=count"];
+          d["Dominion=count"] = +d["Dominion=count"];
+          d["Codenames=count"] = +d["Codenames=count"];
+          d["Terraforming Mars=count"] = +d["Terraforming Mars=count"];
+          d["Gloomhaven=count"] = +d["Gloomhaven=count"];
+          d["Magic: The Gathering=count"] = +d["Magic: The Gathering=count"];
+          d["Dixit=count"] = +d["Dixit=count"];
+          d["Monopoly=count"] = +d["Monopoly=count"];
+      });
+
+    console.log(data);
+      // Scale the range of the data
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) {
+          return Math.max(d["Catan=count"], d["Dominion=count"],
+                        d["Codenames=count"], d["Terraforming Mars=count"],
+                        d["Gloomhaven=count"], d['Magic: The Gathering=count'],
+                        d['Dixit=count'], d['Monopoly=count']); })]);
+
+      // Add the valueline1 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'black')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline1);
+
+      // Add the valueline2 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style("stroke", "red")
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline2);
+
+      // Add the valueline3 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'green')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline3);
+
+      // Add the valueline4 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'purple')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline4);
+
+      // Add the valueline5 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'steelblue')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline5);
+
+      // Add the valueline6 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'cyan')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline6);
+
+      // Add the valueline7 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'grey')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline7);
+
+      // Add the valueline8 path.
+      svg1.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'orange')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline8);
+
+      // Add the X Axis
+      svg1.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+      svg1.append('text')
+        .attr('class', 'x label')
+        .attr('x', 275)
+        .attr('y', height+40)
+        .text('Month')
+
+      // Add the Y Axis
+      svg1.append("g")
+          .call(d3.axisLeft(y));
+      svg1.append('text')
+          .attr('transform', 'rotate(270)')
+        .attr('class', 'y label')
+        .attr('x', -250)
+        .attr('y', -50)
+        .text('Num of Ratings')
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Catan=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'black')
+      .text('Catan');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Dominion=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'red')
+      .text('Dominion');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Codenames=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'green')
+      .text('Codenames');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Terraforming Mars=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'purple')
+      .text('Terraforming Mars');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Gloomhaven=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'steelblue')
+      .text('Gloomhaven');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Magic: The Gathering=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'cyan')
+      .text('Magic: The Gathering');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Dixit=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'grey')
+      .text('Dixit');
+
+      // Add labels to each category:
+      svg1.append('text')
+      .attr('transform', 'translate(' + (width + 3) + ',' + y(data[data.length-1]['Monopoly=count']) + ')')
+      .attr('font-size', '10px')
+      .attr('text-anchor', 'start')
+      .style('fill', 'orange')
+      .text('Monopoly');
+
+
+    });
+
+
+    ///////////////////////////////////////////////////////////
+    // Drawing the second graph:
+    var svg2 = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.csv("boardgame_ratings.csv").then(function(data) {
+
+      // format the data
+      data.forEach(function(d) {
+          d.date = parseTime(d.date);
+          d["Catan=rank"] = +d["Catan=rank"];
+          d["Dominion=rank"] = +d["Dominion=rank"];
+          d["Codenames=rank"] = +d["Codenames=rank"];
+          d["Terraforming Mars=rank"] = +d["Terraforming Mars=rank"];
+          d["Gloomhaven=rank"] = +d["Gloomhaven=rank"];
+      });
+
+    console.log(data);
+      // Scale the range of the data
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) {
+          return Math.max(d["Catan=rank"], d["Dominion=rank"],
+                        d["Codenames=rank"], d["Terraforming Mars=rank"],
+                        d["Gloomhaven=rank"]); })]);
+
+      // Add the valueline1 path.
+      svg2.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'black')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline1);
+
+      // Add the valueline2 path.
+      svg2.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style("stroke", "red")
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline2);
+
+      // Add the valueline3 path.
+      svg2.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'green')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline3);
+
+      // Add the valueline4 path.
+      svg2.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'purple')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline4);
+
+      // Add the valueline5 path.
+      svg2.append("path")
+          .data([data])
+          .attr("class", "line")
+          .style('stroke', 'steelblue')
+          .style('fill', 'none')        // Remove shaded area
+          .attr("d", valueline5);
+
+      // Add the X Axis
+      svg2.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+
+      // Add the Y Axis
+      svg2.append("g")
+          .call(d3.axisLeft(y));
+    });
+</script>
+
+
+</body>
+</html>
