@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea28f4c8-ef69-41ff-8d60-9830387c89da" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../HW2/Q1/Q1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HW2/Q3/Q3.html" beforeDir="false" afterPath="$PROJECT_DIR$/../HW2/Q3/Q3.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,10 +32,11 @@
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../HW2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
@@ -83,6 +84,7 @@
       <workItem from="1613177599092" duration="1394000" />
       <workItem from="1613340808414" duration="2257000" />
       <workItem from="1613582554840" duration="31000" />
+      <workItem from="1614119406486" duration="44000" />
     </task>
     <servers />
   </component>
