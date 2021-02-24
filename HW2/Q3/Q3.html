@@ -57,8 +57,8 @@ font-size: 80%;
 <script>
     // This code is using the template from this post: https://bl.ocks.org/d3noob/daecba427fed7c2d912d8abbe9f3e784
     // set the dimensions and margins of the graph
-    var margin = {top: 50, right: 100, bottom: 50, left: 100},
-        width = 750 - margin.left - margin.right,
+    var margin = {top: 50, right: 200, bottom: 50, left: 100},
+        width = 850 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
     // parse the date / time
@@ -264,26 +264,32 @@ font-size: 80%;
               .style('fill', 'none')                // Remove shaded area
               .attr("d", lineFunction);
             if (subCategories.includes(categories[i])) {      // Add dots/circles to each line
-                svg2.selectAll('myCircles')         // Add circles to each line
+                svg2.selectAll('myCircles')        // Add data label to circles
                     .data(data)
                     .enter()
-                    .append('circle')
-                    .attr('fill', lineArray[i].color)
-                    .attr('stroke', 'none')
+                    .append('circle')               // A better way to concatenate the following '.attr's can be found here: https://stackoverflow.com/questions/20822466/how-to-set-multiple-attributes-with-one-value-function
+                    .attr('fill', function(d, j) {
+                        if (j % 3 === 2) { return lineArray[i].color; }
+                    })
+                    .attr('stroke', function(d, j) {
+                        if (j % 3 === 2) { return 'none'; }
+                    })
                     .attr('cx', function (d, j) {
                         if (j % 3 === 2) { return x(d.date); }
                     })
                     .attr('cy', function (d, j) {
                         if (j % 3 === 2) { return y(d[categories[i]+'=count']); }
                     })
-                    .attr('r', 10)
+                    .attr('r', function(d, j) {
+                        if (j % 3 === 2) { return 10; }
+                    })
 
-                svg2.selectAll(null)        // Add data label to circles
+                svg2.selectAll('myCircles')
                     .data(data)
                     .enter()
                     .insert('text')
                     .text(function(d, j) {          // Don't use 'i' as index here because the outer for loop is using 'i' as index already
-                        if (j % 3 === 2) { return d[categories[i]+'=rank']; }
+                        if (j % 3 === 2) { return d[categories[i]+'=rank']+j; }
                     })
                     .attr("x", function(d, j) {
                         if (j % 3 === 2) { return x(d.date)-5; }
@@ -293,8 +299,7 @@ font-size: 80%;
                     })
                     .attr('font-size', '8px')
                     .attr('stroke', 'white')
-
-
+                    .attr('font', 'sans-serif')
             }
         };
 
@@ -308,10 +313,43 @@ font-size: 80%;
                 .text(categories[i]);
         }
 
+        // Finally, we'll add a legend to represent numbers in circles:
+        var legend_keys = ["BoardGameGeek Rank"];
+        var circleLegend = svg2.selectAll('.circleLegend')
+                               .data(legend_keys)
+                               .enter()
+                               .append('g')
+                               .attr('class', 'circleLegend')
+                               .attr('font-size', '12px')
+                               .attr("transform", function (d,i) {
+                                   return "translate(" + (width) + "," + height + ")";
+                               });
+        circleLegend.append("text")
+                  .text(function (d) {return d;})
+                  .attr("transform", "translate(15,9)"); //align texts with boxes
+        svg2.selectAll('.circleLegendIcon')        // Add data label to circles
+                    .data(legend_keys)
+                    .enter()
+                    .append('circle')               // A better way to concatenate the following '.attr's can be found here: https://stackoverflow.com/questions/20822466/how-to-set-multiple-attributes-with-one-value-function
+                    .attr('fill', 'black')
+                    .attr('stroke', 'none')
+                    .attr('cx', width+margin.right-120)
+                    .attr('cy', height-20)
+                    .attr('r', 15)
+        svg2.selectAll('.circleLegendIcon')
+            .data(legend_keys)
+            .enter()
+            .insert('text')
+            .text('rank')
+            .attr('stroke', 'white')
+            .attr("x", width+margin.right-130)
+            .attr("y", height-18)
+            .attr('font-size', '12px')
+            .attr('font-weight', 'lighter')
+
+
 
     });
-
-
 
 
 
