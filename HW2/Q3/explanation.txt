@@ -1,0 +1,8 @@
+Before choosing nonlinear scales we should determine the skewness of data
+Log Scale:
+    1. Very large skewness
+    2. To show percent change or multiplicative factors.
+    3. The relationship between x and y is Logarithmic.
+Square Scale:
+    1. Large skewness.
+    2. The relationship between x and y is quadratic.
