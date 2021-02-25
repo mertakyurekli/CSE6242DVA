@@ -126,6 +126,31 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('y', -50)
         .text('Count');
 
+
+    // Add legend:
+    var lineLegend = svg1.selectAll('.lineLegend')
+                         .data(categories)
+                         .enter()
+                         .append('g')
+                         .attr('class', 'lineLegend')
+                         .attr('transform', function(d, i) {
+                             return 'translate(' + width + ',' + (i * 20) + ')';
+                         });
+    lineLegend.append('text')
+              .text(function(d) { return d;})
+              .attr("transform", "translate(15,9)"); //align texts with boxes
+    lineLegend.append("circle")
+              .attr("fill", function (d, i) {return lineArray[i].color; })
+              .attr('r', 5)
+
+    // Add my GT Username:
+    var myUsername = svg1.append('text')
+        .attr('y', 20)
+        .attr('x', width/2-50)
+        .attr('stroke', 'steelblue')
+        .attr('font-size', '15px')
+        .attr('font-weight', 'bold')
+        .text('GT Username: yyu441')
 })
 
 
