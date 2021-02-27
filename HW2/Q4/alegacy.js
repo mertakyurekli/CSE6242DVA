@@ -21,8 +21,7 @@ var svg1 = d3.select('body')
              .attr("width", width + margin.left + margin.right)
              .attr("height", height + margin.top + margin.bottom)
              .append("g")
-             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-             .attr('viewBox', [0,0,width,height]);
+             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Define a function to draw multiple lines in a single canvas:
 function multiLines(category) {
@@ -69,7 +68,7 @@ d3.csv('average-rating.csv').then(function(data) {
     x.domain(d3.extent(q1Data, function(d) { return d.rating; }));
     y.domain([0, maxCount+50]);
 
-    console.log('q1Data: ', q1Data);
+
 
     // generate color for each line:
     for (let i = 0; i < colorArray[0].length; i++) {
@@ -80,9 +79,50 @@ d3.csv('average-rating.csv').then(function(data) {
 
 
 
+    var mouseover = function(d) {
+         // makeLineFunction(d.forline)
+         // tooltip.style("visibility", "visible")
+    };
+
+    var mousemove = function() {
+            // div.transition()
+            //     .duration(200)
+            //     .style('opacity', 0)
+        };
+
+    var mouseleave = function() {
+            // div.transition()
+            //     .duration(200)
+            //     .style('opacity', 1)
+    };
+
     // Add valueline1 to 'path' where 'valueline1' represents 'Catan'. So on and so forth:
     for (let i = 0; i < categories.length; i++) {
         var lineFunction = multiLines(categories[i]);
+
+        var tooltip = d3.select("body")
+                        .append("div")
+                        .attr('class','tooltip')
+                        .style("height", "100px")
+                        .style("width", "200px")
+                        .style("position", "absolute")
+                        .style("z-index", "10")
+                        .style("visibility", "hidden")
+                        .style("color", "black")
+                        .style("background-color", "#FFFFFF")
+        var tooltipsvg = tooltip.append("svg")
+        makeLineFunction = function(data) {
+            tooltipsvg.selectAll("path")
+                      .data([data])
+                      .attr("fill", "none")
+                      .attr("stroke", "black")
+                      .attr("stroke-width", 2)
+                      .attr('d', lineFunction)
+
+          return tooltipsvg.node();
+        }
+
+
         svg1.append("path")
           .data([q1Data])
           .attr("class", "line")
@@ -98,6 +138,12 @@ d3.csv('average-rating.csv').then(function(data) {
             .attr("cx", function(d) { return x(d.rating) })
             .attr("cy", function(d) { return y(+d[categories[i]]) })
             .attr("r", 7)
+            .on('mouseover', function(d) {
+                makeLineFunction(d)
+                tooltip.style("visibility", "visible")
+            })
+            .on('mousemove', mousemove)
+            .on('mouseleave', mouseleave)
     }
 
 
