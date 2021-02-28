@@ -80,6 +80,117 @@ d3.csv('average-rating.csv').then(function(data) {
 
 
 
+    var tooltip = d3.select("body")
+                    .append("div")
+                    .attr('class','tooltip')
+                    .style("height", "100px")
+                    .style("width", "200px")
+                    .style("position", "absolute")
+                    .style("z-index", "10")
+                    .style("visibility", "hidden")
+                    .style("color", "black")
+                    .style("background-color", "grey");
+    var tooltipsvg = tooltip.append('svg');
+    var makeLineFunction = function(data) {
+        tooltipsvg.selectAll('path')
+                .data(data).enter().append('path')
+                .attr('d', d3.line()
+                    .x(d => x(d.rating))
+                    .y(d => y(d['2015'])))
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", 2);
+        console.log('tooltipsvg.node: ', tooltipsvg.node());
+        return tooltipsvg.node();
+    }
+    var makeBarFunction = function(years, ratings) {
+        var q3Data = [],
+            maxRated = [];
+        for (let i = 0; i < data.length; i++) {
+            if (Math.floor(parseInt(data[i]['average_rating'])) === 6 && data[i]['year'] === '2019') {
+                if (q3Data.length < 5) {
+                    q3Data.push(data[i]);
+                    maxRated.push(parseInt(data[i]['users_rated']))
+                }
+                else if (q3Data.length >= 5 && parseInt(data[i]['users_rated']) > Math.min(... maxRated)) {
+                    let minIndex = maxRated.indexOf(Math.min(... maxRated));
+                    q3Data[minIndex] = data[i];
+                    maxRated[minIndex] = parseInt(data[i]['users_rated']);
+                }
+            }
+        }
+        function sortData(d) {                  // sort by descending order
+            for (let i = 0; i < d.length; i++) {
+                let key = d[i],
+                    j = i - 1;
+                while (j >= 0 && parseInt(key['users_rated']) > parseInt(d[j]['users_rated'])) {
+                    d[j+1] = d[j];
+                    j--;
+                }
+                d[j+1] = key;
+            }
+        }
+        sortData(q3Data);
+        q3Data.forEach(function(d) { d.users_rated = parseInt(d.users_rated); } )
+        var svg2 = d3.select('body')
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        // set the ranges
+        var xScalec = d3.scaleLinear().range([0, width]);
+        var yScalec = d3.scaleBand().range([height, 0]).padding(0.1);
+        xScalec.domain([0, parseInt(q3Data[0]['user_rated'])]);
+        yScalec.domain(q3Data.map(function(d) { return d.name; }).reverse());
+        svg2.selectAll('.bar')
+            .data(q3Data)
+            .enter()
+            .append('rect')
+            .attr('class', 'bar')
+            .attr('width', function(d) { return xScalec(+d.users_rated); })
+            .attr('y', function (d) { return yScalec(d.name); })
+            .attr('height', yScalec.bandwidth());
+        // gridlines in x axis function
+        function make_x_gridlines() {
+            return d3.axisBottom(xScalec)
+                .ticks(10)
+            }
+        // add the x gridlines
+        svg2.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(make_x_gridlines()
+                .tickSize(-height)
+                .tickFormat(''));
+        // Add the x axis:
+        svg2.append('g')
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScalec));
+        svg2.append('text')
+            .attr('class', 'x label')
+            .attr('x', 180)
+            .attr('y', height + 40)
+            .attr('font-weight', 'bold')
+            .attr('font-size', '18px')
+            .text('Number of Users');
+        // add the y Axis
+        svg2.append("g")
+            .call(d3.axisLeft(yScalec));
+        svg2.append('text')
+            .attr('transform', 'rotate(270)')
+            .attr('class', 'y label')
+            .attr('x', -250)
+            .attr('y', -150)
+            .attr('font-weight', 'bold')
+            .attr('font-size', '20px')
+            .text('Games');
+        console.log('q3Data: ',  q3Data);
+        console.log('what is your node?: ', svg2.node());
+        return svg2.node();
+    }
+    var afunction = function(d, i, n) {
+        console.log('d: ', d, 'i: ', i, n);
+    }
     // Add valueline1 to 'path' where 'valueline1' represents 'Catan'. So on and so forth:
     for (let i = 0; i < categories.length; i++) {
         var lineFunction = multiLines(categories[i]);
@@ -90,14 +201,38 @@ d3.csv('average-rating.csv').then(function(data) {
           .style('fill', 'none')                // Remove shaded area
           .attr("d", lineFunction);
 
-        svg1.selectAll("myCircles"+i.toString())
-            .data(q1Data)                                   // Don't miss [] in this line. Otherwise you'll not draw lines on canvas
+        svg1.selectAll("myCircles")
+            .data(q1Data)
             .enter()
             .append("circle") // Uses the enter().append() method
             .attr('fill', lineArray[i].color)
             .attr("cx", function(d) { return x(d.rating) })
             .attr("cy", function(d) { return y(+d[categories[i]]) })
             .attr("r", 7)
+            .on('mouseover', function(data) {
+                // makeBarFunction(years, ratings);
+                tooltipsvg.selectAll('path')
+                        .data([data]).enter().append('path')
+                        .attr('d', d3.line()
+                            .x(d => x(d.rating))
+                            .y(d => y(d[categories[i]])))
+                        .attr("fill", "none")
+                        .attr("stroke", lineArray[i].color)
+                        .attr("stroke-width", 2);
+                        tooltip.style('visibility', 'visible');
+                        console.log('data in mouseover: ', data, d3.event.pageX);
+                return tooltipsvg.node();
+            })
+            .on('mouseout', function(d, i, n) {
+                console.log(i)
+                afunction(d,i,n);
+                return tooltip.style('visibility', 'visible');
+            })
+            .on('mousemove', function( ){
+                return tooltip.style("top", (d3.event.pageY-20)+"px")
+                    .style("left",(d3.event.pageX-50)+"px");
+            })
+
     }
 
 
