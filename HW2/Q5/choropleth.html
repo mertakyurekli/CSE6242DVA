@@ -2,10 +2,12 @@
 <meta charset="utf-8">
 <head>
 	<!-- add title -->
-	
+	<h3>Average Rating of Board Games Across the World</h3>
     <!-- import required libraries here -->
     <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
     <script type="text/javascript" src="../lib/d3-dsv.min.js"></script>
+    <script type="text/javascript" src="../lib/d3-legend.min.js"></script>
+<!--    <script type="text/javascript" src="../lib/d3-tip.min.js"></script>-->
 	<style>
 		/* define CSS rules here */
 	    #tooltip {
@@ -73,6 +75,8 @@
                     .attr("viewBox", "0 0 " + w + " " + h);
 
 		// enter code to create color scale
+        var redColors = ['#F8A88F', '#F6886F', '#DD5650', '#B13E43'];
+        var quantileScale = d3.scaleQuantile().range(redColors);
 
 		// enter code to define tooltip
         var tooltip = d3.select("body")
@@ -114,7 +118,7 @@
               .attr('value', function(d) { return d; });
 
             createMapAndLegend(world, gameData, defaultGame);
-            createMapAndLegend(world, gameData, defaultGame);
+
 
             // event listener legend when selection changes. Call createMapAndLegend() with required arguments.
             d3.select('#selectButton').on('change', function(d) {
@@ -122,14 +126,33 @@
             })
 
             // create Choropleth with default option. Call createMapAndLegend() with required arguments. 
-
+            createMapAndLegend(world, gameData, defaultGame);
         }
 
 		// this function should create a Choropleth and legend using the world and gameData arguments for a selectedGame
 		// also use this function to update Choropleth and legend when a different game is selected from the dropdown
         function createMapAndLegend(world, gameData, selectedGame){
-			let ratingDict = {}, numUsersDict = {}, allColors = [], numOfUsers = [];
+			let ratingDict = {}, numUsersDict = {}, allColors = [], numOfUsers = [], usefulColors = [];
+			let makeupCountry = [];
 			function dataProcessing() {
+			    // Generate 'makeupCountry' that contains all countries:
+			    for (let i = 0; i < world.features.length; i++) {
+			        if (!(makeupCountry.includes(world.features[i].properties.name))) { makeupCountry.push(world.features[i].properties.name); }
+                }
+			    for (let i = 0; i < gameData.length; i++) {
+                    if (gameData[i].Game === selectedGame) {
+                        if (parseFloat(gameData[i]['Average Rating']) === null) { allColors.push(0); }
+                        else { allColors.push(parseFloat(gameData[i]['Average Rating'])); }
+                    }
+                    if (!(makeupCountry.includes(gameData[i].Country))) { makeupCountry.push(gameData[i].Country); }
+                }
+			    // Process 'allColors':
+			    for (let i = 0; i < makeupCountry.length; i++) {
+                    for (let j = 0; j < gameData.length; j++) {
+                        if (gameData[j].Game === selectedGame) { allColors.push(gameData[j]['Average Rating']); }
+                    }
+			    }
+			    console.log('test: ', allColors, allColors.length);
 			    for (let i = 0; i < world.features.length; i++) {
                     ratingDict[world.features[i].properties.name] = null;
                     numUsersDict[world.features[i].properties.name] = null;
@@ -143,20 +166,21 @@
                             numUsersDict[world.features[i].properties.name] = parseFloat(gameData[j]['Number of Users']);
                             world.features[i].properties['rating'] = parseFloat(gameData[j]['Average Rating']);
                             world.features[i].properties['number users'] = parseFloat(gameData[j]['Number of Users']);
+                            world.features[i].properties['color'] = parseFloat(gameData[j]['Average Rating']);
+                            if (parseFloat(gameData[j]['Average Rating']) > 0) {
+                                usefulColors.push(parseFloat(gameData[j]['Average Rating']));
+                            }
                         }
                     }
                 }
-                for (let k in ratingDict) { allColors.push(ratingDict[k]); }
-                for (let k in numUsersDict) { numOfUsers.push(numUsersDict[k]); }
+                quantileScale.domain(allColors);                // allColors contains all ratings
             }
 			dataProcessing();
-
+            console.log('see here: ', selectedGame, allColors, world.features);
             // draw map: http://jsfiddle.net/spanndemic/5JRMt/
             // https://www.d3-graph-gallery.com/graph/line_select.html
             // https://stackoverflow.com/questions/30035932/how-do-i-use-this-javascript-variable-in-html
-            let quantileScale = d3.scaleQuantile()
-                                  .domain(allColors)                // allColors contains all ratings
-                                  .range(['#F8A88F', '#F6886F', '#DD5650', '#B13E43']);
+
             var appending = svg.selectAll('path')
                                .data(world.features)
             appending.enter()
@@ -190,13 +214,24 @@
                             .style("left",(d3.event.pageX-50)+"px").style('visibility', 'visible');
                     })
             appending.transition()
-                     .duration(500)
+                     .duration(200)
                      .attr('d', path)
-                     .attr('fill', function(d, i) { return allColors[i] ? quantileScale(allColors[i]) : 'grey'; })
-
-
+                     .attr('fill', function(d, i) { return d.properties.rating ? quantileScale(d.properties.rating) : 'grey'; })
             appending.exit().remove();
-
+            svg.append('g')
+               .attr('class', 'legendQuant')
+               .attr("transform","translate("+ (width + 900) + ",20)");
+            var legend = d3.legendColor()
+                           .labelFormat(d3.format('.2f'))
+                           .useClass(true)
+                           .shape('rect')
+                           .orient('vertical')
+                           .scale(quantileScale);
+            svg.select('.legendQuant').call(legend);
+            svg.selectAll('.swatch')
+                .style('fill', function(d, i) {
+                    return redColors[i];
+                })
         }
 
     </script>
