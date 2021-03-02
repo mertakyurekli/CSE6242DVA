@@ -22,17 +22,19 @@
                 box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
                 pointer-events: none;
         }
-
         #tooltip.hidden {
                 display: none;
         }
-
         #tooltip p {
                 margin: 0;
                 font-family: sans-serif;
                 font-size: 16px;
                 line-height: 20px;
                 color: white;
+        }
+        #tipDiv {
+            color: white;
+            font-size: 14px;
         }
 	</style>
 </head>
@@ -131,12 +133,16 @@
 			    for (let i = 0; i < world.features.length; i++) {
                     ratingDict[world.features[i].properties.name] = null;
                     numUsersDict[world.features[i].properties.name] = null;
+                    world.features[i].properties['rating'] = null;
+                    world.features[i].properties['number users'] = null;
                 }
                 for (let i = 0; i < world.features.length; i++) {
                     for (let j = 0; j < gameData.length; j++) {
                         if (gameData[j].Country === world.features[i].properties.name && gameData[j].Game === selectedGame) {
                             ratingDict[world.features[i].properties.name] = parseFloat(gameData[j]['Average Rating']);
                             numUsersDict[world.features[i].properties.name] = parseFloat(gameData[j]['Number of Users']);
+                            world.features[i].properties['rating'] = parseFloat(gameData[j]['Average Rating']);
+                            world.features[i].properties['number users'] = parseFloat(gameData[j]['Number of Users']);
                         }
                     }
                 }
@@ -150,19 +156,16 @@
             // https://stackoverflow.com/questions/30035932/how-do-i-use-this-javascript-variable-in-html
             let quantileScale = d3.scaleQuantile()
                                   .domain(allColors)                // allColors contains all ratings
-                                  .range(['lightgreen', 'yellow', 'orange', 'red']);
+                                  .range(['#F8A88F', '#F6886F', '#DD5650', '#B13E43']);
             var appending = svg.selectAll('path')
-                               .data(world.features);
-            world['details'] = {'rating': allColors, 'number users': numOfUsers};
-            console.log('world: ', world);
+                               .data(world.features)
             appending.enter()
                      .append('path')
                      .on('mouseover', function(data, i) {
                          COUNTRY = data.properties.name;
                          GAME = d3.select('#selectButton').node().value;
-                         AVG_RATING = allColors[i] ? allColors[i].toString() : 'N/A';
-                         NUM_OF_USERS = numOfUsers[i] ? numOfUsers[i].toString() : 'N/A';
-                         console.log(data, allColors[i], numOfUsers[i], data.properties.name);
+                         AVG_RATING = data.properties.rating ? data.properties.rating : 'N/A';
+                         NUM_OF_USERS = data.properties['number users'] ? data.properties['number users'] : 'N/A';
                          document.getElementById('tipDiv').innerText = ('Country: ' + COUNTRY + '\n' +
                                                                         'Game: ' + GAME + '\n' +
                                                                         'Avg Rating: ' + AVG_RATING + '\n' +
@@ -182,7 +185,7 @@
                     .on('mouseout', function(d, i, n) {
                         return tooltip.style('visibility', 'hidden');
                     })
-                    .on('mousemove', function( ){
+                    .on('mousemove', function(){
                         return tooltip.style("top", (d3.event.pageY-20)+"px")
                             .style("left",(d3.event.pageX-50)+"px").style('visibility', 'visible');
                     })
@@ -193,18 +196,7 @@
 
 
             appending.exit().remove();
-        }
-        function displayData(d) {
-            d3.select("#neighborhood")
-                .text(d.properties.Country)
-            d3.select("#datum")
-                .text(parseFloat(d.properties[selected_dataset]).toFixed(2));
-        }
-        function hideData() {
-            d3.select("#neighborhood")
-              .text("\u00A0");
-            d3.select("#datum")
-              .text("\u00A0");
+
         }
 
     </script>

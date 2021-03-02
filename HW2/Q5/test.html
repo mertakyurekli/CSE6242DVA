@@ -182,7 +182,9 @@
                       .attr("stroke", "#808080")
                       .attr("fill", "#b3b3b3")
                       .call(updateFill, selected_dataset)
-                      .on("mouseover", function(d) { displayData(d); })
+                      .on("mouseover", function(d) {
+                          console.log('somether: ', json.features, json);
+                          displayData(d); })
                       .on("mouseout", hideData);
         });
         // dropdown dataset selection
