@@ -5,14 +5,9 @@ var margin = {top: 50, right: 200, bottom: 50, left: 200},
     width = 850 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-// parse the date / time
-var parseTime = d3.timeParse("%Y");
-
 // set the ranges
 var xScalec = d3.scaleLinear().range([0, width]);
 var yScalec = d3.scaleBand().range([height, 0]).padding(0.1);
-
-
 
 d3.csv('average-rating.csv').then(function(data) {
     var q3Data = [],

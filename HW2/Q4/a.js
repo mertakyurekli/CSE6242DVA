@@ -1,3 +1,4 @@
+
 //////////////////////////////////////// Q3.a /////////////////////////////////////////////
 // This code is using the template from this post: https://bl.ocks.org/d3noob/daecba427fed7c2d912d8abbe9f3e784
 // set the dimensions and margins of the graph
@@ -5,35 +6,8 @@ var margin = {top: 50, right: 200, bottom: 50, left: 100},
     width = 850 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-// parse the date / time
-var parseTime = d3.timeParse("%Y");
 
-// set the ranges
-var x = d3.scaleLinear().range([0, width]);
-var y = d3.scaleLinear().range([height, 0]);
 
-// Define colors:
-var lineArray = [],
-    colorArray = [d3.schemeCategory10, d3.schemeAccent],
-    colorScheme = d3.scaleOrdinal(colorArray[0]);
-var svg1 = d3.select('body')
-             .append('svg')
-             .attr("width", width + margin.left + margin.right)
-             .attr("height", height + margin.top + margin.bottom)
-             .append("g")
-             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-             .attr('viewBox', [0,0,width,height]);
-
-// Define a function to draw multiple lines in a single canvas:
-function multiLines(category) {
-    return d3.line()
-        .x(function (d) {
-            return x(+d.rating);
-        })
-        .y(function (d) {
-            return y(+d[category]);
-        });
-}
 
 
 d3.csv('average-rating.csv').then(function(data) {
@@ -41,36 +15,60 @@ d3.csv('average-rating.csv').then(function(data) {
         d.average_rating = Math.floor(d.average_rating);
         d.users_rated = +d.users_rated;
     })
-
-    // Generate data before drawing:
-    // Initialize data set for q1
-    var q1Data = [],
-        categories = [],
-        maxCount = 0;
-    for (let i = 0; i < 10; i++) {          // Initialize q1Data
-        let currDict = {};
-        for (let y = 2015; y < 2020; y++) {
-            currDict['rating'] = i;
-            currDict[y.toString()] = 0;
-            if( i === 0) { categories.push(y.toString()); }
-        }
-        q1Data.push(currDict);
-    }
-        for (let i = 0; i < data.length; i++) {
-            let currRating = data[i]['average_rating'],
-                currYear = data[i]['year'];
-            if (parseInt(currYear) >= 2015 && parseInt(currYear) <= 2019) {
-                q1Data[currRating][currYear]++;
-                maxCount = Math.max(maxCount, q1Data[currRating][currYear]);
+    var groupByRatings = function(d) {
+        var q1Data = [],
+            categories = [],
+            maxCount = 0;
+        for (let i = 0; i < 10; i++) {          // Initialize q1Data
+            let currDict = {};
+            for (let y = 2015; y < 2020; y++) {
+                currDict['rating'] = i;
+                currDict[y.toString()] = 0;
+                if( i === 0) { categories.push(y.toString()); }
             }
+            q1Data.push(currDict);
+        }
+            for (let i = 0; i < d.length; i++) {
+                let currRating = d[i]['average_rating'],
+                    currYear = d[i]['year'];
+                if (parseInt(currYear) >= 2015 && parseInt(currYear) <= 2019) {
+                    q1Data[currRating][currYear]++;
+                    maxCount = Math.max(maxCount, q1Data[currRating][currYear]);
+                }
+        }
+        return [q1Data, categories, maxCount];
     }
+    var [q1Data, categories, maxCount] = groupByRatings(data);
 
-    // Scale the range of the data:
+    // Scale the range of the data and set the ranges:
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
     x.domain(d3.extent(q1Data, function(d) { return d.rating; }));
     y.domain([0, maxCount+50]);
 
     console.log('q1Data: ', q1Data);
 
+    // Define colors:
+    var lineArray = [],
+        colorArray = [d3.schemeCategory10, d3.schemeAccent],
+        colorScheme = d3.scaleOrdinal(colorArray[0]);
+    var svg1 = d3.select('body')
+                 .append('svg')
+                 .attr("width", width + margin.left + margin.right)
+                 .attr("height", height + margin.top + margin.bottom)
+                 .append("g")
+                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                 .attr('viewBox', [0,0,width,height]);
+    // Define a function to draw multiple lines in a single canvas:
+    function multiLines(category) {
+        return d3.line()
+            .x(function (d) {
+                return x(+d.rating);
+            })
+            .y(function (d) {
+                return y(+d[category]);
+            });
+    }
     // generate color for each line:
     for (let i = 0; i < colorArray[0].length; i++) {
         var lineDict = {};
@@ -78,32 +76,7 @@ d3.csv('average-rating.csv').then(function(data) {
         lineArray.push(lineDict);
     }
 
-
-
-    var tooltip = d3.select("body")
-                    .append("div")
-                    .attr('class','tooltip')
-                    .style("height", "100px")
-                    .style("width", "200px")
-                    .style("position", "absolute")
-                    .style("z-index", "10")
-                    .style("visibility", "hidden")
-                    .style("color", "black")
-                    .style("background-color", "grey");
-    var tooltipsvg = tooltip.append('svg');
-    var makeLineFunction = function(data) {
-        tooltipsvg.selectAll('path')
-                .data(data).enter().append('path')
-                .attr('d', d3.line()
-                    .x(d => x(d.rating))
-                    .y(d => y(d['2015'])))
-                .attr("fill", "none")
-                .attr("stroke", "black")
-                .attr("stroke-width", 2);
-        console.log('tooltipsvg.node: ', tooltipsvg.node());
-        return tooltipsvg.node();
-    }
-    var makeBarFunction = function(years, ratings) {
+    var prepareBarChartData = function(data) {
         var q3Data = [],
             maxRated = [];
         for (let i = 0; i < data.length; i++) {
@@ -132,6 +105,11 @@ d3.csv('average-rating.csv').then(function(data) {
         }
         sortData(q3Data);
         q3Data.forEach(function(d) { d.users_rated = parseInt(d.users_rated); } )
+        return [q3Data, maxRated];
+    }
+    var [q3Data, maxRated] = prepareBarChartData(data);
+
+    var makeBarFunction = function(years, ratings) {
         var svg2 = d3.select('body')
             .append('svg')
             .attr('width', width + margin.left + margin.right)
@@ -189,17 +167,27 @@ d3.csv('average-rating.csv').then(function(data) {
         return svg2.node();
     }
     var afunction = function(d, i, n) {
-        console.log('d: ', d, 'i: ', i, n);
+        console.log('d: ', d, 'i: ', i, 'n: ', n, 'd[i]: ', d[i]);
     }
     // Add valueline1 to 'path' where 'valueline1' represents 'Catan'. So on and so forth:
     for (let i = 0; i < categories.length; i++) {
         var lineFunction = multiLines(categories[i]);
         svg1.append("path")
           .data([q1Data])
-          .attr("class", "line")
+          .attr("class", "line " + categories[i])
           .style('stroke', lineArray[i].color)
           .style('fill', 'none')                // Remove shaded area
           .attr("d", lineFunction);
+
+        var tooltip = d3.select("body")
+                        .append("div")
+                        .style("height", "100px")
+                        .style("width", "200px")
+                        .style("position", "absolute")
+                        .style('visibility', 'hidden')
+                        .attr('class', 'tooltip')
+                        .style("background-color", "grey")
+                        .html('<div id="tipDiv"><p>something there: </p></div>');
 
         svg1.selectAll("myCircles")
             .data(q1Data)
@@ -209,19 +197,19 @@ d3.csv('average-rating.csv').then(function(data) {
             .attr("cx", function(d) { return x(d.rating) })
             .attr("cy", function(d) { return y(+d[categories[i]]) })
             .attr("r", 7)
-            .on('mouseover', function(data) {
-                // makeBarFunction(years, ratings);
-                tooltipsvg.selectAll('path')
-                        .data([data]).enter().append('path')
-                        .attr('d', d3.line()
-                            .x(d => x(d.rating))
-                            .y(d => y(d[categories[i]])))
-                        .attr("fill", "none")
-                        .attr("stroke", lineArray[i].color)
-                        .attr("stroke-width", 2);
-                        tooltip.style('visibility', 'visible');
-                        console.log('data in mouseover: ', data, d3.event.pageX);
-                return tooltipsvg.node();
+            .on('mouseover', function(data, i) {
+                console.log('data in mouseover: ', data, d3.event.pageX);
+               tooltip.style('visibility', 'visible');
+                var tipSVG = d3.select('#tipDiv')
+                                .append('svg');
+               tipSVG.append('rect')
+                   .data(data)
+                     .attr('fill', 'steelblue')
+                     .attr("y", 10)
+                     .attr("height", 30)
+                     .transition()
+                     .duration(1000)
+                     .attr("width", data['2015'] * 6);
             })
             .on('mouseout', function(d, i, n) {
                 console.log(i)
@@ -234,7 +222,6 @@ d3.csv('average-rating.csv').then(function(data) {
             })
 
     }
-
 
     svg1.append('text')
         .attr('x', 200)
@@ -287,9 +274,6 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('font-weight', 'bold')
         .text('GT Username: yyu441')
 })
-
-
-
 
 
 
