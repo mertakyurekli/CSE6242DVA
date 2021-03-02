@@ -240,9 +240,28 @@
                      .duration(700)
                      .attr("fill", function(d) {
                           var datum = parseFloat(d.properties[selected_dataset]);
-                          console.log(d, selected_dataset, d.properties[selected_dataset], datum);
                           return fill_viridis(norm_fill(datum));
                      });
         }
+    </script>
+    <script>
+        //this is your global variable
+        var currentRadius = 0;
+
+        d3.select("#nRadius").on("input", function(d) {
+            //you are changing the global value here on change event.
+            currentRadius = +this.value
+            console.log("Inside: " + currentRadius);
+            currentRadius = update(currentRadius);
+            //call your function
+            outside();
+            });
+        //some function somewhere
+        function outside(){
+           console.log(currentRadius)
+        }
+        //value of global variable when this executed is 0
+        //because no change event has been called
+        console.log("Outside: " + currentRadius);
     </script>
 </body>
