@@ -13,7 +13,7 @@ d3.csv('average-rating.csv').then(function(data) {
     var q3Data = [],
         maxRated = [];
     for (let i = 0; i < data.length; i++) {
-        if (Math.floor(parseInt(data[i]['average_rating'])) === 6 && data[i]['year'] === '2019') {
+        if (Math.floor(parseInt(data[i]['average_rating'])) === 3 && data[i]['year'] === '2016') {
             if (q3Data.length < 5) {
                 q3Data.push(data[i]);
                 maxRated.push(parseInt(data[i]['users_rated']))

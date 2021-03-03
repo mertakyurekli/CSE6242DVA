@@ -174,9 +174,10 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('fill', lineArray[0].color)
         .attr("cx", function(d) { return x(d.rating) })
         .attr("cy", function(d) { return y(+d['users rated']) })
-        .attr("r", 7)
+        .attr("r", 2)
         .on('mouseover', mouseoverHandler)
         .on('mouseout', function(d) {
+            d3.select(this).attr('r', 2);
             d3.select('#barchart').remove();
         });
     svg1.selectAll('myCircles')
@@ -187,9 +188,10 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('fill', lineArray[1].color)
         .attr("cx", function(d) { return x(d.rating) })
         .attr("cy", function(d) { return y(+d['users rated']) })
-        .attr("r", 7)
+        .attr("r", 2)
         .on('mouseover', mouseoverHandler)
         .on('mouseout', function(d) {
+            d3.select(this).attr('r', 2);
             d3.select('#barchart').remove();
         });
     svg1.selectAll('myCircles')
@@ -200,9 +202,10 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('fill', lineArray[2].color)
         .attr("cx", function(d) { return x(d.rating) })
         .attr("cy", function(d) { return y(+d['users rated']) })
-        .attr("r", 7)
+        .attr("r", 2)
         .on('mouseover', mouseoverHandler)
         .on('mouseout', function(d) {
+            d3.select(this).attr('r', 2);
             d3.select('#barchart').remove();
         });
     svg1.selectAll('myCircles')
@@ -213,9 +216,10 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('fill', lineArray[3].color)
         .attr("cx", function(d) { return x(d.rating) })
         .attr("cy", function(d) { return y(+d['users rated']) })
-        .attr("r", 7)
+        .attr("r", 2)
         .on('mouseover', mouseoverHandler)
         .on('mouseout', function(d) {
+            d3.select(this).attr('r', 2);
             d3.select('#barchart').remove();
         });
     svg1.selectAll('myCircles')
@@ -226,9 +230,10 @@ d3.csv('average-rating.csv').then(function(data) {
         .attr('fill', lineArray[4].color)
         .attr("cx", function(d) { return x(d.rating) })
         .attr("cy", function(d) { return y(+d['users rated']) })
-        .attr("r", 7)
+        .attr("r", 2)
         .on('mouseover', mouseoverHandler)
         .on('mouseout', function(d) {
+            d3.select(this).attr('r', 2);
             d3.select('#barchart').remove();
         });
 
@@ -267,8 +272,21 @@ d3.csv('average-rating.csv').then(function(data) {
                 q3Data.forEach(function(d) { d.users_rated = parseInt(d.users_rated); } )
             }
             processBarData();           // Prepare data for drawing barchart.
+            if (q3Data) {
+                while (q3Data.length > 0 && q3Data.length < 5) {
+                    let specialSpace = '';
+                    for (let i = 0; i < q3Data.length; i++) { specialSpace += ' '}
+                    q3Data.push({
+                        'name': specialSpace,
+                        'year': selectedYear.toString(),
+                        'average_rating': 0,
+                        'users_rated': 0
+                    })
+                    console.log('q3Data length: ', q3Data.length);
+                }
+            }
             console.log('After q3Data: ', q3Data);
-
+            d3.select(this).attr('r', 8);
             let bar_svg1 = d3.select('body')
                              .append('svg')
                              .attr('id', 'barchart')
@@ -279,33 +297,40 @@ d3.csv('average-rating.csv').then(function(data) {
             let drawBarchart = function() {
                 // drawing barchart:
                 let xbarScalec = d3.scaleLinear().range([0, width]);
-                let ybarScalec = d3.scaleBand().range([height, 0]).padding(0.1);
+                let ybarScalec = d3.scaleBand().range([height, 0]).padding(.5);
                 xbarScalec.domain([0, parseInt(q3Data[0]['users_rated'])]);
                 ybarScalec.domain(q3Data.map(function(d) {
                     if (d.name.length > 10) { return d.name.slice(0,10);}
                     else {return d.name;} }).reverse());
-                console.log(lineArray)
                 bar_svg1.selectAll('.bar')
                         .data(q3Data)
                         .enter()
                         .append('rect')
                         .attr('class', 'bar')
+                        .transition()
+                        .duration(300)
                         .attr('width', function(d) { return xbarScalec(+d.users_rated); })
                         .attr('y', function (d) { return ybarScalec(d.name.slice(0,10)); })
                         .attr('height', ybarScalec.bandwidth())
-                        .attr('fill', colorMap[selectedYear.toString()]);
+                        // .attr('fill', colorMap[selectedYear.toString()]);
                 // gridlines in x axis function
                 function make_x_gridlines() {
                     return d3.axisBottom(xbarScalec)
-                        .ticks(5)
+                        .ticks(10)
                     }
                 // add the x gridlines
                 bar_svg1.append("g")
                     .attr('class', 'grid')
                     .attr("transform", "translate(0," + height + ")")
+                    .attr('stroke-opacity', .2)
                     .call(make_x_gridlines()
                         .tickSize(-height)
                         .tickFormat(''));
+                // Add title to barchart:
+                bar_svg1.append('text')
+                        .attr('x', width/2-150)
+                        .attr('y', -10)
+                        .text('Top 5 Most Rated Games for ' + selectedYear.toString() + ' with Rating ' + usersRating.toString());
                 // Add the x axis:
                 bar_svg1.append('g')
                     .attr("transform", "translate(0," + height + ")")
