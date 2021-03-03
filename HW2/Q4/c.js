@@ -50,7 +50,7 @@ d3.csv('average-rating.csv').then(function(data) {
     console.log(q3Data)
     xScalec.domain([0, parseInt(q3Data[0]['users_rated'])]);
     yScalec.domain(q3Data.map(function(d) { return d.name; }).reverse());
-
+    console.log('q3Data: ', q3Data);
 
     svg2.selectAll('.bar')
         .data(q3Data)
