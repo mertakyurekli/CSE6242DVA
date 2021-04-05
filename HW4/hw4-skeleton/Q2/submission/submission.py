@@ -144,9 +144,6 @@ class Utility(object):
             if y and len(y) > 0:
                 current_entropy += len(y) / len(previous_y) * self.entropy(y)
         info_gain = previous_entropy - current_entropy
-#         entropy_left, entropy_right = self.entropy(current_y[0]), self.entropy(current_y[1])
-#         p_left, p_right = len(current_y[0]) / len(previous_y), len(current_y[1]) / len(previous_y)
-#         info_gain = previous_entropy - (entropy_left * p_left + entropy_right * p_right)
         #############################################
         return info_gain
 
@@ -248,15 +245,6 @@ class DecisionTree(object):
         #############################################\
         self.tree = self.build_tree(X, y, 1)
 
-        # check if exceeds max_depth OR is a leaf node:
-#         if depth >= self.max_depth or len(X[0]) <= 1: return self.find_majority(y)
-#         if y.count(y[0]) == len(y): return y[0]
-#         split_attribute, split_val, X_left, X_right, y_left, y_right = util.best_split(X, y)
-#         if len(X_left) == 0 or len(X_right) == 0: return self.find_majority(y)
-#         else:
-#             self.tree[split_attribute] = [split_val, self.learn(X_left, y_left, depth+1), self.learn(X_right, y_right, depth+1)]
-
-
     def build_tree(self, X, y, depth):
         # max_depth
         if depth >= self.max_depth:
@@ -267,13 +255,13 @@ class DecisionTree(object):
         # leaf feature node
         if len(X[0]) <= 1:
             return self.find_majority(y)
-        split_attribute, split_val, X_left, X_right, y_left, y_right = self.best_split(X, y)
-        if len(leftX) == 0 or len(rightX) == 0:
+        split_attribute, split_val, X_left, X_right, y_left, y_right = util.best_split(X, y)
+        if len(X_left) == 0 or len(X_right) == 0:
             return self.find_majority(y)
         else:
             tree = {}
-            tree[feature] = [value, self.build_tree(leftX, lefty, depth+1),
-            self.build_tree(rightX, righty, depth+1)]
+            tree[feature] = [value, self.build_tree(X_left, y_left, depth+1),
+            self.build_tree(X_right, y_right, depth+1)]
             return tree
 
         #############################################
@@ -307,23 +295,6 @@ class DecisionTree(object):
                 majority_label = d[value]
                 majority = value
         return majority
-
-    def splitFeature(self, X, y):
-        info_gain, feature, value = -1, -1, -1
-        for i in range(len(X[0])):                                # Iterate thru features -> X[:][i] is all rows of the ith feature
-            # split_features is X[:][i]
-            split_features = [X[j][i] for j in range(len(X))]     # Iterate thru rows     -> X[j][i] is the ith col's jth row
-            for split_point in split_features:                    # Iterate thru values   -> split_point is X[j][i]
-                X_left, X_right, y_left, y_right = util.partition_classes(X, y, i, split_point)
-                curr = []
-                curr.append(y_left)
-                curr.append(y_right)
-                curr_info_gain = util.information_gain(y, curr)
-                if curr_info_gain > info_gain:
-                    feature = i
-                    value = split_point
-                    info_gain = curr_info_gain
-        return feature, value
 
 
 # This starter code does not run. You will have to add your changes and
@@ -393,9 +364,9 @@ class RandomForest(object):
     def bootstrapping(self, XX):
         # Initializing the bootstap datasets for each tree
         for i in range(self.num_trees):
-            data_sample, data_label = self._bootstrapping(XX, len(XX))
-            self.bootstraps_datasets.append(data_sample)
-            self.bootstraps_labels.append(data_label)
+            sample, labels = self._bootstrapping(XX, len(XX))
+            self.bootstraps_datasets.append(sample)
+            self.bootstraps_labels.append(labels)
 
     def fitting(self):
         # TODO: Train `num_trees` decision trees using the bootstraps datasets
@@ -435,7 +406,7 @@ class RandomForest(object):
                 # NOTE - you can add few lines of codes above (but inside voting) to make this work
                 ### Implement your code here
                 #############################################
-
+                print('record testing here: ', record)
                 index = self.bootstraps_datasets[0].index(record.tolist())
                 y = np.append(y, self.bootstraps_labels[0][index])
                 #############################################
