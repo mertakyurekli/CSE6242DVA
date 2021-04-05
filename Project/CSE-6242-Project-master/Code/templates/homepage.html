@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<title>Welcome</title>
+
+<style>
+.button {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button {width: 250px;}
+
+</style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-wide w3-padding w3-card">
+    <a href="#home" class="w3-bar-item w3-button"><b>CSE6242</b> Project</a>
+    <!-- Float links to the right. Hide them on small screens -->
+    <div class="w3-right w3-hide-small">
+      <a href="#about" class="w3-bar-item w3-button">About</a>
+      <a href="#Instruction" class="w3-bar-item w3-button">Instruction</a>
+      <a href="#contact" class="w3-bar-item w3-button">Contact</a>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="w3-display-container w3-content w3-wide" style="max-width:1500px;" id="home">
+  <img class="w3-image" src="http://faradore.com/wp-content/uploads/2018/01/DSC1525a_low.jpg" alt="Architecture" width="1500" height="800">
+  <div class="w3-display-middle w3-margin-top w3-center">
+    <h1 class="w3-xxxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><br>&nbsp;Visualize and Forecast&nbsp;</br></span><span class="w3-padding w3-black w3-opacity-min">&nbsp;&nbsp;&nbsp;House Value in US&nbsp;&nbsp;&nbsp;</span></h1>
+    <div class="container">
+        <button onclick="location.href = '/mainpage';"class="button" type="button">Start Now</button>
+    </div>
+  </div>
+
+</header>
+
+<!-- Page content -->
+<div class="w3-content w3-padding" style="max-width:1564px">
+
+  <!-- Project Section -->
+  <div class="w3-container w3-padding-32" id="about">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
+     <p>As the real estate bubble in China or Canada swells larger, there are more foreign investors targeting on the US real estate market. There is a need for these foreign investors to learn more about the US market, to discover more places like Atlanta, GA or Austin, TX, which has a relatively low investment cost but possesses large potential of earnings. Currently, the most popular online real estate companies do not provide general aggregated statistical information, while the local real estate agents usually do not have the vision of the entire country.</p>
+     <p> </p>
+    <p>We want to help these investors to invest real estates in the U.S. We aim to provide a summary of real estate information in terms of large scales at all aspects for real estate investors who are seeking for investment opportunities across the country and need more general guidance. We use choropleth map to provide aggregate real estate information at two granularities, state-level and county-level. Once a foreign investor decides his target state based on our choropleth map and click that state, our website will display historical real estate data of this state. Furthermore, our website will have a zoom-in choropleth map for counties in this state. Similarly, our website will display historical real estate data of this county once the user clicks that county.
+    </p>
+    <p> </p>
+    <p>Through our website, foreign investors can get information progressively and find their most optimal investment location across the U.S.</p>
+  </div>
+
+  
+
+  <!-- About Section -->
+  <div class="w3-container w3-padding-32" id="Instruction">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Instruction</h3>
+    <p>Click the "Start Now" button on the top to get started.
+    </p>
+    <p> </p>
+    <p>Our interactive map has following functions:<br>1. The select box in the top middle can change the display of color and data between "Current price" and "Growth potental".<br>2. Double click a state, the map will zoom in to that state and show its county. To go back, double click any county and the it will return to the national view.<br>3. Hover the cursor on the state or county, a tooltip will appear to show its name and data. If the select box is in current price, the data will be the current price of house value in that area. If the select box is in growth potential, the data will be the growth potential of that area. The larger the number of growth potential is, the greater growth potential it will get.<br>4. Single click on the state or county, a series of select boxes will emerge at the bottom. Choose the time and housetype, a line chart will appear.<br>5. If you want to see exact points of each time, change the "points" select box from hide to show. Hover the mouse on each point, a tooltip will appear to show the time and the price of that point.<br>6. To find out information from different areas, single click on area of interest on the map. The existing line chart will disappear. Choose time and housetype again to show the new line chart.<br>7. If you want to compare different housetypes, check the "compare" box on the right. Then continue selecting other housetypes, new lines will appear on the existing chart for comparison.</p>
+  </div>
+
+  <!-- Contact Section -->
+  <div class="w3-container w3-padding-32" id="contact">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Contact</h3>
+    <p><font size=4.8>Team member</font></p>
+    <div class="w3-row-padding">
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <img src="http://wx4.sinaimg.cn/mw690/6f6066a8ly1fqunqejvqbj20k00k0n1q.jpg" alt="Yarui" style="width:100%">
+      <h3>Yarui Wang</h3>
+      <p class="w3-opacity">yarui@gatech.edu</p>
+      <p><button class="w3-button w3-light-grey w3-block"><a href="mailto:yarui@gatech.edu">Contact</a></button></p>
+    </div>
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <img src="http://wx1.sinaimg.cn/mw690/6f6066a8ly1fqugqbbvgzj20gq0gqwgf.jpg" alt="Taoyouwei" style="width:100%">
+      <h3>Taoyouwei Gao</h3>
+      <p class="w3-opacity">taoyouwei.gao@gatech.edu</p>
+      <p><button class="w3-button w3-light-grey w3-block"><a href="mailto:taoyouwei.gao@gatech.edu">Contact</a></button></p>
+    </div>
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <img src="https://scontent-atl3-1.xx.fbcdn.net/v/t1.0-9/11222632_631768526925650_7649577763791597142_n.jpg?_nc_cat=0&oh=fb7849f2fdceabef862f04e05b39f9cc&oe=5B6044A2" alt="Ke" style="width:100%">
+      <h3>Ke Zhang</h3>
+      <p class="w3-opacity">kzhang356@gatech.edu</p>
+      <p><button class="w3-button w3-light-grey w3-block"><a href="mailto:kzhang356@gatech.edu">Contact</a></button></p>
+    </div>
+  </div>
+  </div>
+  
+<!-- End page content -->
+</div>
+
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-16">
+  <p>Powered by <a href="http://poloclub.gatech.edu/cse6242/2018spring/" title="W3.CSS" target="_blank" class="w3-hover-text-blue">Team 21 from CSE 6242 @ Georgia Tech</a></p>
+</footer>
+
+</body>
+</html>

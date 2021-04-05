@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="93e4544c-9fd3-42a0-bc4f-afd5d7a95174" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/HW3.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q2/q2.dbc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q3/output-small.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Q3/output-small.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q3/q3_pyspark.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Q3/q3_pyspark.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q3/q3_pyspark_0321.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q4/q4_pyspark-gcp-deliverable.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q4/q4_pyspark-gcp.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Q4/q4_pyspark-gcp.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q5/q5_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Q5/q5_results.csv" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1qOmpM6Xj1G7no8BWBJrLZXiMUA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../HW4/hw4-skeleton" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="93e4544c-9fd3-42a0-bc4f-afd5d7a95174" name="Default Changelist" comment="" />
+      <created>1616959194360</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1616959194360</updated>
+      <workItem from="1616959207919" duration="76000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1133" y="275" key="FileChooserDialogImpl" timestamp="1616959282814">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="1133" y="275" key="FileChooserDialogImpl/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1616959282814" />
+  </component>
+</project>
