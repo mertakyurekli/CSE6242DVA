@@ -105,11 +105,14 @@ class Utility(object):
         y_right = []
         ### Implement your code here
         #############################################
-        current_attribute = [val[split_attribute] for val in X]
-        for i in range(len(current_attribute)):
-            if current_attribute[i] <= split_val:
-                X_left, X_right = X[:i+1], X[i+1:]
-                y_left, y_right = y[:i+1], y[i+1:]
+        current_attribute = [x[split_attribute] for x in X]  # find the specific column of split_attribute
+        for i in range(len(current_attribute)):              # Iterate thru this split_attribute column
+            if current_attribute[i] <= split_val:            # If an element <= split_val, then append this row to X_left;
+                X_left.append(X[i])
+                y_left.append(y[i])
+            elif current_attribute[i] > split_val:           #  otherwise append to X_right
+                X_right.append(X[i])
+                y_right.append(y[i])
 
         #############################################
         return (X_left, X_right, y_left, y_right)
@@ -243,26 +246,17 @@ class DecisionTree(object):
         ### Implement your code here
         #############################################
         self.tree = self.build_tree(X, y, 0)
-#         if depth >= self.max_depth or len(X[0]) <= 1: return self.find_majority(y)
-#         if y.count(y[0]) == len(y): return y[0]
-#         split_attribute, split_val, X_left, X_right, y_left, y_right = util.best_split(X, y)
-#         if len(X_left) == 0 or len(X_right) == 0:
-#             return self.find_majority(y)
-#         else:
-#             self.tree = [split_val, self.learn(X_left, y_left, depth+1), self.learn(X_right, y_right, depth+1)]
 
 
     def build_tree(self, X, y, depth):
-        # max_depth
-        if depth >= self.max_depth:
+        # max_depth or leaf node:
+        if depth >= self.max_depth or len(X[0]) <= 1:
             return self.find_majority(y)
         # all data are in the same categroy
-        if y.count(y[0]) == len(y):
-            return y[0]
-        # leaf feature node
-        if len(X[0]) <= 1:
-            return self.find_majority(y)
+        if y.count(y[0]) == len(y): return y[0]
+
         split_attribute, split_val, X_left, X_right, y_left, y_right = util.best_split(X, y)
+
         if len(X_left) == 0 or len(X_right) == 0:
             return self.find_majority(y)
         else:
@@ -360,7 +354,7 @@ class RandomForest(object):
         #############################################
 
         # select a subset of features randomly:
-        for i in range(n//2):
+        for i in range(int(n * 2/3)):
             index = random.randint(0, n-1)
             row = XX[index]
             sample.append(row[:-1])
@@ -416,7 +410,7 @@ class RandomForest(object):
 
                 index = self.bootstraps_datasets[0].index(record)
                 y = np.append(y, self.bootstraps_labels[0][index])
-                print('Something special here.')
+
                 #############################################
             else:
                 y = np.append(y, np.argmax(counts))

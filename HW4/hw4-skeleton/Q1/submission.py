@@ -78,9 +78,10 @@ class PageRank:
 
         ### Implement your code here
         #############################################
-                pr_values = (1 - damping_factor) * node_weights + damping_factor * ((np.array(new_pr_values) / self.node_degree[source]))
+                new_pr_values[target] += damping_factor * pr_values[source] / self.node_degree[source]
 
-                new_pr_values = pr_values
+            min_pr_values = (1 - damping_factor) * node_weights
+            pr_values = np.add(new_pr_values, min_pr_values)
         #############################################
 
         print ("Completed {0}/{1} iterations. {2} seconds elapsed.".format(it + 1, iterations, time.time() - start_time))
