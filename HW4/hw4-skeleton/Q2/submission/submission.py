@@ -210,9 +210,8 @@ class Utility(object):
                 previous_y, current_y = y, [y[:j+1], y[j+1:]]
                 info_gain = self.information_gain(previous_y, current_y)
                 if info_gain > best_info_gain:
-                    X_left, X_right = X[:j+1], X[j+1:]
-                    y_left, y_right = y[:j+1], y[j+1:]
-                    split_attribut, split_val = i, j
+                    X_left, X_right, y_left, y_right = self.partition_classes(X, y, i, j)
+                    split_attribute, split_val = i, j
 
         return split_attribute, split_val, X_left, X_right, y_left, y_right
         #############################################
@@ -242,8 +241,16 @@ class DecisionTree(object):
         #    'right' key. You can add more keys which might help in classification
         #    (eg. split attribute and split value)
         ### Implement your code here
-        #############################################\
-        self.tree = self.build_tree(X, y, 1)
+        #############################################
+        self.tree = self.build_tree(X, y, 0)
+#         if depth >= self.max_depth or len(X[0]) <= 1: return self.find_majority(y)
+#         if y.count(y[0]) == len(y): return y[0]
+#         split_attribute, split_val, X_left, X_right, y_left, y_right = util.best_split(X, y)
+#         if len(X_left) == 0 or len(X_right) == 0:
+#             return self.find_majority(y)
+#         else:
+#             self.tree = [split_val, self.learn(X_left, y_left, depth+1), self.learn(X_right, y_right, depth+1)]
+
 
     def build_tree(self, X, y, depth):
         # max_depth
@@ -260,7 +267,7 @@ class DecisionTree(object):
             return self.find_majority(y)
         else:
             tree = {}
-            tree[feature] = [value, self.build_tree(X_left, y_left, depth+1),
+            tree[split_attribute] = [split_val, self.build_tree(X_left, y_left, depth+1),
             self.build_tree(X_right, y_right, depth+1)]
             return tree
 
@@ -274,11 +281,10 @@ class DecisionTree(object):
 
         curr = self.tree
         while curr and isinstance(curr, dict):
-            feature = list(curr.keys())[0]
-            if record[feature] <= curr[feature][0]:
-                curr = curr[feature][1]
-            else:
-                curr = curr[feature][2]
+            split_attribute = list(curr.keys())[0]
+            if record[split_attribute] <= curr[split_attribute][0]:
+                curr = curr[split_attribute][1]
+            else: curr = curr[split_attribute][2]
         return curr
         #############################################
 
@@ -353,7 +359,8 @@ class RandomForest(object):
         ### Implement your code here
         #############################################
 
-        for i in range(n):
+        # select a subset of features randomly:
+        for i in range(n//2):
             index = random.randint(0, n-1)
             row = XX[index]
             sample.append(row[:-1])
@@ -406,9 +413,10 @@ class RandomForest(object):
                 # NOTE - you can add few lines of codes above (but inside voting) to make this work
                 ### Implement your code here
                 #############################################
-                print('record testing here: ', record)
-                index = self.bootstraps_datasets[0].index(record.tolist())
+
+                index = self.bootstraps_datasets[0].index(record)
                 y = np.append(y, self.bootstraps_labels[0][index])
+                print('Something special here.')
                 #############################################
             else:
                 y = np.append(y, np.argmax(counts))
