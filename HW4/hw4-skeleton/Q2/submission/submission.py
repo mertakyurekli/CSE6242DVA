@@ -27,15 +27,12 @@ class Utility(object):
         entropy = 0
         ### Implement your code here
         #############################################
-        zeros, ones = 0, 0
-        for i, y in enumerate(class_y):
-            if y == 0: zeros += 1
-            elif y == 1: ones += 1
-        p_zero, p_one = 1.0 * zeros / len(class_y), 1.0 * ones / len(class_y)
-        if p_zero == 1 or p_one == 1:
-            entropy = 0
-        else:
-            entropy = -(p_zero * log(p_zero, 2) + p_one * log(p_one, 2))
+        if not (np.count_nonzero(class_y) == 0 or np.count_nonzero(class_y) == len(class_y)):
+            num_ones = np.count_nonzero(class_y)
+            num_zeros = len(class_y)-num_ones
+            prob_ones = num_ones/(num_ones+num_zeros)
+            prob_zeros = num_zeros/(num_ones+num_zeros)
+            entropy = -prob_ones*np.log2(prob_ones)-prob_zeros*np.log2(prob_zeros)
         #############################################
         return entropy
 
@@ -144,8 +141,7 @@ class Utility(object):
         previous_entropy = self.entropy(previous_y)
         current_entropy = 0.0
         for y in current_y:
-            if y and len(y) > 0:
-                current_entropy = current_entropy + len(y) / len(previous_y) * self.entropy(y)
+            current_entropy += len(y) / len(previous_y) * self.entropy(y)
         info_gain = previous_entropy - current_entropy
         #############################################
         return info_gain
@@ -206,29 +202,20 @@ class Utility(object):
         X_left, X_right, y_left, y_right = [], [], [], []
         ### Implement your code here
         #############################################
+        mlist = np.random.choice(len(X[0]), len(X[0]), replace=False)     # select a subset features from all features randomly
+        Xarray = np.asarray(X)
         best_info_gain = -1
-        m_list = np.random.choice(len(X[0]), len(X[0]), replace=False)
-        for m in m_list:
-            split_val = np.mean(np.asarray(X)[:, m])
+        best_index, best_value = 0, 0
+        best_X_left, best_X_right, best_y_left, best_y_right = [], [], [], []
+
+        for m in mlist:
+            split_val = np.mean(Xarray[:, m])
             X_left, X_right, y_left, y_right = self.partition_classes(X, y, m, split_val)
             info_gain = self.information_gain(y, [y_left, y_right])
             if info_gain > best_info_gain:
-                split_attribute, split_val = m, split_val
-                best_info_gain = info_gain
-                best_X_left, best_X_right, best_y_left, best_y_right = X_left, X_right, y_left, y_right
-        return split_attribute, split_val, best_X_left, best_X_right, best_y_left, best_y_right
-
-#         best_info_gain = -1
-#         for i in range(len(X[0])):              # Iterate thru features/cols --> split_attribute
-#             for j, value in enumerate(X):       # Iterate thru rows          --> split_val
-#                 split_value = X[j][i]
-#                 previous_y, current_y = y, [y[:j+1], y[j+1:]]
-#                 info_gain = self.information_gain(previous_y, current_y)
-#                 if info_gain >= best_info_gain:
-#                     X_left, X_right, y_left, y_right = self.partition_classes(X, y, i, j)
-#                     split_attribute, split_val = i, j
-
-#         return split_attribute, split_val, X_left, X_right, y_left, y_right
+                best_index, best_value, best_info_gain, best_X_left, best_X_right, best_y_left, best_y_right = m, split_val, info_gain, X_left, X_right, y_left, y_right
+        best_split = {'X_left': best_X_left, 'X_right': best_X_right, 'y_left': best_y_left, 'y_right': best_y_right,'split_attribute': best_index, 'split_val': best_value, 'info_gain': best_info_gain}
+        return best_split
         #############################################
 
 util = Utility()
@@ -257,38 +244,29 @@ class DecisionTree(object):
         #    (eg. split attribute and split value)
         ### Implement your code here
         #############################################
-#         self.tree = self.build_tree(X, y, 0)
-        if not par_node or len(y) == 0: return
+        self.tree = self.build_tree(X, y, 0)
+
+
+    def build_tree(self, X, y, depth):
+        # max_depth
+        if depth >= self.max_depth:
+            return self.find_majority(y)
+        # all data are in the same categroy
+        if y.count(y[0]) == len(y):
+            return y[0]
+        # leaf feature node
+        if len(X[0]) <= 1:
+            return self.find_majority(y)
+        output = util.best_split(X, y)
+        split_attribute, split_val = output['split_attribute'], output['split_val']
+        X_left, X_right, y_left, y_right = output['X_left'], output['X_right'], output['y_left'], output['y_right']
+        if len(X_left) == 0 or len(X_right) == 0:
+            return self.find_majority(y)
         else:
-            split_attribute, split_val, best_X_left, best_X_right, best_y_left, best_y_right = util.best_split(X, y)
-            counts = np.bincount(y)
-            most_common_y = np.argmax(counts)
-            par_node = dict(split_attr = split_attribute ,split_value = split_val, node_val = most_common_y)
-            par_node['left'] = self.learn(X_left, y_left, {}, depth+1)
-            par_node['right'] = self.learn(X_right, y_right, {}, depth+1)
-            if not par_node['left'] or not par_node['right']: par_node['leaf_node'] = 'true'
-            else: par_node['leaf_node'] = 'false'
-            self.tree = par_node
-            return (par_node)
-
-
-
-#     def build_tree(self, X, y, depth):
-#         # max_depth or leaf node:
-#         if depth >= self.max_depth or len(X[0]) <= 1:
-#             return self.find_majority(y)
-#         # all data are in the same categroy
-#         if y.count(y[0]) == len(y): return y[0]
-
-#         split_attribute, split_val, X_left, X_right, y_left, y_right = util.best_split(X, y)
-
-#         if len(X_left) == 0 or len(X_right) == 0:
-#             return self.find_majority(y)
-#         else:
-#             tree = {}
-#             tree[split_attribute] = [split_val, self.build_tree(X_left, y_left, depth+1),
-#             self.build_tree(X_right, y_right, depth+1)]
-#             return tree
+            tree = {}
+            tree[split_attribute] = [split_val, self.build_tree(X_left, y_left, depth+1),
+            self.build_tree(X_right, y_right, depth+1)]
+            return tree
 
         #############################################
 
@@ -308,18 +286,18 @@ class DecisionTree(object):
         #############################################
 
 
-#     def find_majority(self, y):
-#         d = {}
-#         majority, majority_label = None, 0
-#         for value in y:
-#             if value not in d:
-#                 d[value] = 1
-#             elif value in d:
-#                 d[value] += 1
-#             if d[value] > majority_label:
-#                 majority_label = d[value]
-#                 majority = value
-#         return majority
+    def find_majority(self, y):
+        d = {}
+        majority, majority_label = None, 0
+        for value in y:
+            if value not in d:
+                d[value] = 1
+            elif value in d:
+                d[value] += 1
+            if d[value] > majority_label:
+                majority_label = d[value]
+                majority = value
+        return majority
 
 
 # This starter code does not run. You will have to add your changes and
@@ -379,12 +357,11 @@ class RandomForest(object):
         #############################################
 
         # select a subset of features randomly:
-        random_indices = np.random.choice(range(n), size=n, replace=True)
-        for i in random_indices:
-            sample = XX[i][:-1]
-            index = XX[i][-1]
-            sample.append(sample)
-            labels.append(index)
+        for i in range(n):
+            index = random.randint(0, n-1)
+            row = XX[index]
+            sample.append(row[:-1])
+            labels.append(row[-1])
         #############################################
         return (sample, labels)
 
@@ -415,13 +392,10 @@ class RandomForest(object):
             #   2. Predict the label using each of the above found trees.
             #   3. Use majority vote to find the final label for this recod.
             votes = []
-            non_oob_case = []
 
             for i in range(len(self.bootstraps_datasets)):
                 dataset = self.bootstraps_datasets[i]
 
-                non_oob = self.decision_trees[i].classify(record)
-                non_oob_case.append(non_oob)
                 if record not in dataset:
                     OOB_tree = self.decision_trees[i]
                     effective_vote = OOB_tree.classify(record)
@@ -437,10 +411,9 @@ class RandomForest(object):
                 ### Implement your code here
                 #############################################
 
-#                 index = self.bootstraps_datasets[0].index(record)
-#                 y = np.append(y, self.bootstraps_labels[0][index])
-                y = np.append(y, np.random.choice(non_oob_case))
-
+                index = self.bootstraps_datasets[0].index(record)
+                y = np.append(y, self.bootstraps_labels[0][index])
+                print('Something special here.')
                 #############################################
             else:
                 y = np.append(y, np.argmax(counts))

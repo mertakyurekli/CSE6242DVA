@@ -1,0 +1,12 @@
+https://github.com/prathik-k/CSE-6242-DVA/blob/master/HW4/Q2/Q2/util.py
+
+https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#activate-env
+
+https://github.com/dorisxx/Data-and-Visual-Analytics/blob/master/hw4/Q2/decision_tree.py
+
+https://github.com/schen2011/DVA-Homework/blob/master/hw4/Q2/decision_tree.py
+
+
+---------
+Q3:
+https://github.com/prathik-k/CSE-6242-DVA/blob/master/HW4/Q3/hw4q3.ipynb
