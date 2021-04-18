@@ -202,7 +202,7 @@ class Utility(object):
         X_left, X_right, y_left, y_right = [], [], [], []
         ### Implement your code here
         #############################################
-        mlist = np.random.choice(len(X[0]), len(X[0]), replace=False)     # select a subset features from all features randomly
+        mlist = np.random.choice(len(X[0]), int(len(X[0])*2/3), replace=False)     # select a subset features from all features randomly
         Xarray = np.asarray(X)
         best_info_gain = -1
         best_index, best_value = 0, 0
@@ -413,7 +413,6 @@ class RandomForest(object):
 
                 index = self.bootstraps_datasets[0].index(record)
                 y = np.append(y, self.bootstraps_labels[0][index])
-                print('Something special here.')
                 #############################################
             else:
                 y = np.append(y, np.argmax(counts))
