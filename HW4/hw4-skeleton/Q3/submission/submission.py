@@ -80,9 +80,10 @@ class LinearRegressionModel():
         # return: float
         # -------------------------------
         # ADD CODE HERE
-        y_predict_train_round = np.rint(y_predict_train)
-        y_train_round = np.rint(y_train.to_numpy())
-        train_accuracy = accuracy_score(y_train_round, y_predict_train_round)
+        y_predict_train_round = [0 if k < 0.5 else 1 for k in y_predict_train]
+#         y_train_round = [0 if y_train[i] < 0.5 else 1 for i in range(len(y_train))]
+#         y_train_round = np.rint(y_train.to_numpy())
+        train_accuracy = accuracy_score(y_train, y_predict_train_round)
         # -------------------------------
         return train_accuracy
 
@@ -94,9 +95,11 @@ class LinearRegressionModel():
         # return: float
         # -------------------------------
         # ADD CODE HERE
-        y_predict_test_round = np.rint(y_predict_test)
-        y_test_round = np.rint(y_test.to_numpy())
-        test_accuracy = accuracy_score(y_test_round, y_predict_test_round)
+#         y_predict_test_round = np.rint(y_predict_test)
+#         y_test_round = np.rint(y_test.to_numpy())
+        y_predict_test_round = [0 if k < 0.5 else 1 for k in y_predict_test]
+#         y_test_round = [0 if y_test[i] < 0.5 else 1 for i in range(len(y_test))]
+        test_accuracy = accuracy_score(y_test, y_predict_test_round)
 
         # -------------------------------
         return test_accuracy
@@ -225,7 +228,7 @@ class SupportVectorMachine():
         # ADD CODE HERE
         standardizer = StandardScaler()
         scaled_x_train = standardizer.fit_transform(x_train)
-        scaled_x_test = standardizer.fit_transform(x_test)
+        scaled_x_test = standardizer.transform(x_test)
         # -------------------------------
         return scaled_x_train, scaled_x_test
 
@@ -278,7 +281,10 @@ class SupportVectorMachine():
         # -------------------------------
         svm_parameters = {'kernel':('linear', 'rbf'), 'C':[0.01, 0.1, 1.0]}
         # ADD CODE HERE
-        svm_cv = GridSearchCV(SVC(), svm_parameters, n_jobs=-1, return_train_score=True)
+        svm_cv = GridSearchCV(SVC(gamma='auto'),
+                              svm_parameters,
+                              n_jobs=-1,
+                              return_train_score=True)
         svm_cv.fit(scaled_x_train, y_train)
         best_score = svm_cv.best_score_
         # -------------------------------
@@ -292,8 +298,11 @@ class SupportVectorMachine():
         # return: numpy series, numpy series
         # -------------------------------
         # ADD CODE HERE
-        y_predict_train = svm_cv.score(scaled_x_train, y_train)
-        y_predict_test = svm_cv.score(scaled_x_test, y_test)
+#         y_predict_train = svm_cv.score(scaled_x_train, y_train)
+#         y_predict_test = svm_cv.score(scaled_x_test, y_test)
+        y_predict_train = svm_cv.predict(scaled_x_train)
+        y_predict_test = svm_cv.predict(scaled_x_test)
+
         # -------------------------------
         return y_predict_train,y_predict_test
 
